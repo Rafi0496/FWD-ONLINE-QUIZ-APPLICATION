@@ -205,7 +205,6 @@ class ProceduralQuestionGenerator {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // Dynamic Math Question Generator
     static generateMathQuestion(tier) {
         const id = `proc_math_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
         
@@ -295,7 +294,6 @@ class ProceduralQuestionGenerator {
                 };
             }
 
-            // Exponent
             const base = this.generateRandomInt(2, 6);
             const exp = base === 2 ? this.generateRandomInt(4, 7) : this.generateRandomInt(2, 4);
             const ans = Math.pow(base, exp);
@@ -309,7 +307,7 @@ class ProceduralQuestionGenerator {
         }
 
         // High / College Tier
-        const types = ['derivative_power', 'trig_special', 'quadratic_roots', 'matrix_det'];
+        const types = ['derivative_power', 'matrix_det', 'quadratic_roots'];
         const chosen = types[this.generateRandomInt(0, types.length - 1)];
 
         if (chosen === 'derivative_power') {
@@ -341,7 +339,6 @@ class ProceduralQuestionGenerator {
             };
         }
 
-        // Quadratic or general algebra
         const r1 = this.generateRandomInt(1, 5);
         const r2 = this.generateRandomInt(2, 6);
         const bCoeff = -(r1 + r2);
@@ -355,7 +352,6 @@ class ProceduralQuestionGenerator {
         };
     }
 
-    // Dynamic Tech Question Generator
     static generateTechQuestion(tier) {
         const id = `proc_tech_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
         
@@ -374,7 +370,6 @@ class ProceduralQuestionGenerator {
             };
         }
 
-        // High / College
         const dec = this.generateRandomInt(16, 255);
         const hex = dec.toString(16).toUpperCase();
         const inc1 = (dec + 16).toString(16).toUpperCase();
@@ -389,11 +384,10 @@ class ProceduralQuestionGenerator {
         };
     }
 
-    // Dynamic Science Question Generator
     static generateScienceQuestion() {
         const id = `proc_sci_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        const m = this.generateRandomInt(2, 20); // mass kg
-        const a = this.generateRandomInt(2, 12); // accel m/s²
+        const m = this.generateRandomInt(2, 20);
+        const a = this.generateRandomInt(2, 12);
         const f = m * a;
         return {
             id,
@@ -414,11 +408,11 @@ class QuizApp {
             name: '',
             age: 0,
             qualification: '',
-            favoriteSubject: ''
+            favoriteSubject: 'general'
         };
         this.quizData = {
             category: 'general',
-            difficulty: 'easy',
+            difficulty: 'medium',
             questionCount: 10,
             timerDuration: 60
         };
@@ -427,6 +421,10 @@ class QuizApp {
         this.currentQuestionIndex = 0;
         this.userAnswers = [];
         this.score = 0;
+        
+        // Two-phase selection state
+        this.selectedAnswer = null;
+        this.selectedButton = null;
         
         // Timers
         this.timer = null;
@@ -442,11 +440,7 @@ class QuizApp {
         this.questionStartTime = null;
         
         this.sound = new TactileSoundController();
-        
-        // Persistent seen question set across sessions
         this.seenQuestionIds = this.loadSeenQuestionIds();
-
-        // Massive Question Bank with Detailed Educational Explanations
         this.questionBanks = this.initQuestionBanks();
 
         this.init();
@@ -463,7 +457,6 @@ class QuizApp {
 
     saveSeenQuestionIds() {
         try {
-            // Keep recent 400 IDs to avoid infinite growth
             const arr = Array.from(this.seenQuestionIds).slice(-400);
             localStorage.setItem('quizmaster_seen_questions', JSON.stringify(arr));
         } catch (e) {
@@ -473,6 +466,7 @@ class QuizApp {
 
     init() {
         this.setupEventListeners();
+        this.setupDashboardControls();
         this.setupKeyboardNavigation();
         this.updateSoundIcon();
         this.showPage('registration-page');
@@ -488,8 +482,13 @@ class QuizApp {
         }
         document.getElementById('register-btn').addEventListener('click', () => this.registerUser());
         document.getElementById('start-quiz-btn').addEventListener('click', () => this.startQuiz());
+        
+        // Quiz Controls
         document.getElementById('skip-btn').addEventListener('click', () => this.skipQuestion());
+        document.getElementById('confirm-btn').addEventListener('click', () => this.confirmAnswer());
         document.getElementById('next-btn').addEventListener('click', () => this.nextQuestion());
+        
+        // Results actions
         document.getElementById('retake-quiz-btn').addEventListener('click', () => this.retakeQuiz());
         document.getElementById('share-results-btn').addEventListener('click', () => this.shareResults());
         document.getElementById('change-settings-btn').addEventListener('click', () => this.changeSettings());
@@ -500,6 +499,65 @@ class QuizApp {
         if (toggleReviewBtn) {
             toggleReviewBtn.addEventListener('click', () => this.toggleReviewSection());
         }
+    }
+
+    // Interactive Dashboard Controls (Subject Tiles, Difficulty Pills, Count & Timer Chips)
+    setupDashboardControls() {
+        // 1. Subject Tiles
+        const subjectTiles = document.querySelectorAll('.subject-tile');
+        subjectTiles.forEach(tile => {
+            tile.addEventListener('click', () => {
+                this.sound.playClick();
+                subjectTiles.forEach(t => t.classList.remove('active'));
+                tile.classList.add('active');
+                const subject = tile.getAttribute('data-subject');
+                this.quizData.category = subject;
+                const hiddenInput = document.getElementById('category');
+                if (hiddenInput) hiddenInput.value = subject;
+            });
+        });
+
+        // 2. Difficulty Pills
+        const difficultyPills = document.querySelectorAll('.selector-pill');
+        difficultyPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                this.sound.playClick();
+                difficultyPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                const diff = pill.getAttribute('data-difficulty');
+                this.quizData.difficulty = diff;
+                const hiddenInput = document.getElementById('difficulty');
+                if (hiddenInput) hiddenInput.value = diff;
+            });
+        });
+
+        // 3. Question Count Chips
+        const countChips = document.querySelectorAll('#count-pills-container .chip-pill');
+        countChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                this.sound.playClick();
+                countChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const count = parseInt(chip.getAttribute('data-count'));
+                this.quizData.questionCount = count;
+                const hiddenInput = document.getElementById('questionCount');
+                if (hiddenInput) hiddenInput.value = count;
+            });
+        });
+
+        // 4. Timer Chips
+        const timerChips = document.querySelectorAll('#timer-pills-container .chip-pill');
+        timerChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                this.sound.playClick();
+                timerChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const duration = parseInt(chip.getAttribute('data-timer'));
+                this.quizData.timerDuration = duration;
+                const hiddenInput = document.getElementById('timerDuration');
+                if (hiddenInput) hiddenInput.value = duration;
+            });
+        });
     }
 
     setupKeyboardNavigation() {
@@ -517,23 +575,30 @@ class QuizApp {
             }
 
             if (activePage.id === 'quiz-page') {
+                // If answer not confirmed yet:
                 if (!this.isAnswered) {
                     const answerBtns = document.querySelectorAll('.answer-btn');
-                    if (e.key >= '1' && e.key <= '4') {
-                        const idx = parseInt(e.key) - 1;
-                        if (answerBtns[idx]) answerBtns[idx].click();
-                    } else if (e.key.toLowerCase() === 'a' && answerBtns[0]) {
-                        answerBtns[0].click();
-                    } else if (e.key.toLowerCase() === 'b' && answerBtns[1]) {
-                        answerBtns[1].click();
-                    } else if (e.key.toLowerCase() === 'c' && answerBtns[2]) {
-                        answerBtns[2].click();
-                    } else if (e.key.toLowerCase() === 'd' && answerBtns[3]) {
-                        answerBtns[3].click();
+                    let targetIdx = -1;
+                    if (e.key >= '1' && e.key <= '4') targetIdx = parseInt(e.key) - 1;
+                    else if (e.key.toLowerCase() === 'a') targetIdx = 0;
+                    else if (e.key.toLowerCase() === 'b') targetIdx = 1;
+                    else if (e.key.toLowerCase() === 'c') targetIdx = 2;
+                    else if (e.key.toLowerCase() === 'd') targetIdx = 3;
+
+                    if (targetIdx >= 0 && answerBtns[targetIdx]) {
+                        answerBtns[targetIdx].click();
+                    } else if (e.key === 'Enter') {
+                        // Confirm if option is selected
+                        const confirmBtn = document.getElementById('confirm-btn');
+                        if (confirmBtn && !confirmBtn.disabled) {
+                            e.preventDefault();
+                            this.confirmAnswer();
+                        }
                     } else if ((e.key === 's' || e.key === 'S') && !document.getElementById('skip-btn').disabled) {
                         this.skipQuestion();
                     }
                 } else {
+                    // If already confirmed: Enter moves to Next Question
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         this.nextQuestion();
@@ -613,69 +678,73 @@ class QuizApp {
 
         this.userData = { name, age, qualification, favoriteSubject };
 
+        // Update profile bar
         document.getElementById('user-name-display').textContent = name;
         document.getElementById('user-age-display').textContent = age;
         document.getElementById('user-level-display').textContent = this.getQualificationName(qualification);
         document.getElementById('user-subject-display').textContent = this.getSubjectName(favoriteSubject);
 
-        this.setupQuizSettings();
+        this.syncDashboardToUserPreferences();
         this.showPage('settings-page');
+    }
+
+    syncDashboardToUserPreferences() {
+        const prefSub = this.userData.favoriteSubject || 'general';
+        this.quizData.category = prefSub;
+
+        // Highlight matching tile
+        const subjectTiles = document.querySelectorAll('.subject-tile');
+        subjectTiles.forEach(tile => {
+            if (tile.getAttribute('data-subject') === prefSub) {
+                tile.classList.add('active');
+            } else {
+                tile.classList.remove('active');
+            }
+        });
+
+        // Set difficulty based on qualification tier
+        let defaultDiff = 'medium';
+        if (this.userData.qualification === 'elementary') defaultDiff = 'easy';
+        else if (this.userData.qualification === 'middle') defaultDiff = 'medium';
+        else defaultDiff = 'hard';
+
+        this.quizData.difficulty = defaultDiff;
+        const difficultyPills = document.querySelectorAll('.selector-pill');
+        difficultyPills.forEach(pill => {
+            if (pill.getAttribute('data-difficulty') === defaultDiff) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
     }
 
     getQualificationName(qual) {
         const names = {
-            elementary: 'Elementary School',
+            elementary: 'Elementary',
             middle: 'Middle School',
             high: 'High School',
             college: 'College / University',
             graduate: 'Graduate Degree',
-            professional: 'Working Professional',
-            teacher: 'Teacher / Educator'
+            professional: 'Professional',
+            teacher: 'Educator'
         };
         return names[qual] || qual;
     }
 
     getSubjectName(subject) {
         const names = {
-            mathematics: '🔢 Mathematics',
-            science: '🔬 Science',
-            history: '📜 History',
-            geography: '🌍 Geography',
-            technology: '💻 Technology & Coding',
-            literature: '📚 Literature & Language',
-            art: '🎨 Art & Culture',
-            sports: '⚽ Sports & Athletics',
-            general: '🌟 General Knowledge'
+            mathematics: 'Mathematics',
+            science: 'Science',
+            history: 'History',
+            geography: 'Geography',
+            technology: 'Technology',
+            literature: 'Literature',
+            art: 'Art & Culture',
+            sports: 'Sports',
+            general: 'General Knowledge'
         };
         return names[subject] || subject;
-    }
-
-    setupQuizSettings() {
-        const categorySelect = document.getElementById('category');
-        categorySelect.value = this.userData.favoriteSubject || 'general';
-        
-        const difficultySelect = document.getElementById('difficulty');
-        if (this.userData.qualification === 'elementary') {
-            difficultySelect.value = 'easy';
-        } else if (this.userData.qualification === 'middle') {
-            difficultySelect.value = 'medium';
-        } else {
-            difficultySelect.value = 'hard';
-        }
-        
-        const timerSelect = document.getElementById('timerDuration');
-        if (this.userData.qualification === 'elementary') {
-            timerSelect.value = '90';
-        } else {
-            timerSelect.value = '60';
-        }
-    }
-
-    collectQuizSettings() {
-        this.quizData.category = document.getElementById('category').value;
-        this.quizData.difficulty = document.getElementById('difficulty').value;
-        this.quizData.questionCount = parseInt(document.getElementById('questionCount').value);
-        this.quizData.timerDuration = parseInt(document.getElementById('timerDuration').value);
     }
 
     mapLevelToTier(qual) {
@@ -685,20 +754,17 @@ class QuizApp {
         return 'college';
     }
 
-    // ======================================================================
-    // FETCH LIVE QUESTIONS FROM OPEN TRIVIA DB API WITH FALLBACK
-    // ======================================================================
     async fetchLiveOpenTDBQuestions(category, difficulty, count) {
         const categoryMap = {
-            general: 9,      // General Knowledge
-            science: 17,     // Science & Nature
-            technology: 18,  // Computers
-            mathematics: 19, // Mathematics
-            sports: 21,      // Sports
-            geography: 22,   // Geography
-            history: 23,     // History
-            art: 25,         // Art
-            literature: 10   // Books / Literature
+            general: 9,
+            science: 17,
+            technology: 18,
+            mathematics: 19,
+            sports: 21,
+            geography: 22,
+            history: 23,
+            art: 25,
+            literature: 10
         };
 
         const catId = categoryMap[category] || 9;
@@ -707,7 +773,7 @@ class QuizApp {
 
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
             const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
 
@@ -720,30 +786,27 @@ class QuizApp {
                     question: decodeHTML(item.question),
                     correct_answer: decodeHTML(item.correct_answer),
                     incorrect_answers: item.incorrect_answers.map(decodeHTML),
-                    explanation: `Correct Answer: "${decodeHTML(item.correct_answer)}". This fact is verified under ${item.category} (${item.difficulty} level).`
+                    explanation: `Correct Answer: "${decodeHTML(item.correct_answer)}". Verified under ${item.category} (${item.difficulty} level).`
                 }));
             }
         } catch (e) {
-            // Silently fallback to procedural & local banks
+            // Silently fallback to procedural and local banks
         }
         return [];
     }
 
-    // ======================================================================
-    // GET FRESH UNIQUE QUESTIONS GUARANTEED
-    // ======================================================================
     async assembleFreshQuestions() {
         const targetCount = this.quizData.questionCount;
         const subject = this.quizData.category;
         const tier = this.mapLevelToTier(this.userData.qualification);
         let selectedQuestions = [];
 
-        // 1. Attempt live API fetch for variety
+        // 1. Live API fetch
         const apiQuestions = await this.fetchLiveOpenTDBQuestions(subject, this.quizData.difficulty, targetCount);
         const freshApi = apiQuestions.filter(q => !this.seenQuestionIds.has(q.id));
         selectedQuestions.push(...freshApi);
 
-        // 2. Add dynamic procedural questions for Math, Tech, and Science
+        // 2. Add dynamic procedural questions
         if (selectedQuestions.length < targetCount) {
             const needed = targetCount - selectedQuestions.length;
             if (subject === 'mathematics') {
@@ -761,7 +824,7 @@ class QuizApp {
             }
         }
 
-        // 3. Fill from local curated question banks with unseen prioritization
+        // 3. Fill from curated banks with unseen prioritization
         if (selectedQuestions.length < targetCount) {
             const subjectBank = this.questionBanks[subject] || this.questionBanks.general;
             let candidatePool = [];
@@ -778,10 +841,8 @@ class QuizApp {
                 if (genBank.middle) candidatePool.push(...genBank.middle);
             }
 
-            // Filter for questions unseen by this user
             let unseen = candidatePool.filter(q => !this.seenQuestionIds.has(q.id));
             if (unseen.length === 0) {
-                // If user has seen all, reset history for this subject
                 candidatePool.forEach(q => this.seenQuestionIds.delete(q.id));
                 unseen = candidatePool;
             }
@@ -795,12 +856,11 @@ class QuizApp {
             }
         }
 
-        // 4. Guaranteed fallback generation if still not enough
+        // 4. Fallback guarantee
         while (selectedQuestions.length < targetCount) {
             selectedQuestions.push(ProceduralQuestionGenerator.generateMathQuestion(tier));
         }
 
-        // Mark all chosen questions as seen in history
         selectedQuestions.forEach(q => this.seenQuestionIds.add(q.id));
         this.saveSeenQuestionIds();
 
@@ -809,11 +869,9 @@ class QuizApp {
 
     async startQuiz() {
         this.sound.playClick();
-        this.collectQuizSettings();
         this.showPage('loading-page');
         this.updateLoadingMessage();
         
-        // Assemble questions asynchronously with guaranteed freshness
         this.questions = await this.assembleFreshQuestions();
         
         setTimeout(() => {
@@ -821,7 +879,7 @@ class QuizApp {
             this.showPage('quiz-page');
             this.displayCurrentQuestion();
             this.startTimer();
-        }, 1200);
+        }, 1100);
     }
 
     updateLoadingMessage() {
@@ -846,7 +904,7 @@ class QuizApp {
                 clearInterval(this.loadingInterval);
                 this.loadingInterval = null;
             }
-        }, 350);
+        }, 320);
     }
 
     initializeQuiz() {
@@ -855,6 +913,8 @@ class QuizApp {
         this.score = 0;
         this.quizStartTime = Date.now();
         this.isAnswered = false;
+        this.selectedAnswer = null;
+        this.selectedButton = null;
         
         document.getElementById('total-questions').textContent = this.questions.length;
         document.getElementById('current-score').textContent = '0';
@@ -882,7 +942,13 @@ class QuizApp {
         document.getElementById('question-text').textContent = question.question;
         this.updateProgressFill();
         
-        // Uniform shuffle of answer choices
+        // Reset selection state
+        this.selectedAnswer = null;
+        this.selectedButton = null;
+        this.isAnswered = false;
+        this.questionStartTime = Date.now();
+        
+        // Shuffle answers uniformly
         const allAnswers = [question.correct_answer, ...question.incorrect_answers];
         const shuffledAnswers = shuffleArray(allAnswers);
         
@@ -903,20 +969,27 @@ class QuizApp {
             textSpan.className = 'answer-btn-text';
             textSpan.textContent = answer;
 
+            const radio = document.createElement('span');
+            radio.className = 'answer-radio';
+
             button.appendChild(keycap);
             button.appendChild(textSpan);
+            button.appendChild(radio);
             
-            button.addEventListener('click', () => this.selectAnswer(answer, button));
+            // Clicking an option ONLY selects it (does not grade yet)
+            button.addEventListener('click', () => this.selectOption(answer, button));
             answersContainer.appendChild(button);
         });
 
-        this.isAnswered = false;
-        this.questionStartTime = Date.now();
-        
-        // Hide explanation feedback container & next button
+        // Hide explanation feedback & next button
         document.getElementById('feedback-container').style.display = 'none';
         document.getElementById('next-btn').style.display = 'none';
         
+        // Show and disable "Confirm Answer" button until an option is picked
+        const confirmBtn = document.getElementById('confirm-btn');
+        confirmBtn.style.display = 'inline-flex';
+        confirmBtn.disabled = true;
+
         // Reset and display Skip button
         const skipBtn = document.getElementById('skip-btn');
         skipBtn.style.display = 'inline-flex';
@@ -936,7 +1009,9 @@ class QuizApp {
             const skipText = document.getElementById('skip-text');
             const skipBtn = document.getElementById('skip-btn');
             
-            if (skipText) skipText.textContent = `Skip (${this.skipTimeRemaining}s)`;
+            if (skipText) {
+                skipText.textContent = `Skip (${this.skipTimeRemaining}s)`;
+            }
             
             if (this.skipTimeRemaining <= 0) {
                 if (skipBtn) skipBtn.disabled = false;
@@ -947,27 +1022,54 @@ class QuizApp {
         }, 1000);
     }
 
-    selectAnswer(selectedAnswer, buttonElement) {
-        if (this.isAnswered) return;
+    // ======================================================================
+    // PHASE 1: SELECT OPTION (HIGHLIGHT ONLY, NOT GRADED YET)
+    // ======================================================================
+    selectOption(answer, buttonElement) {
+        if (this.isAnswered) return; // Already confirmed
         
+        this.sound.playClick();
+        this.selectedAnswer = answer;
+        this.selectedButton = buttonElement;
+
+        // Remove .selected class from all options
+        const answerButtons = document.querySelectorAll('.answer-btn');
+        answerButtons.forEach(btn => btn.classList.remove('selected'));
+
+        // Highlight the selected option
+        buttonElement.classList.add('selected');
+
+        // Enable the "Confirm Answer" button
+        const confirmBtn = document.getElementById('confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+        }
+    }
+
+    // ======================================================================
+    // PHASE 2: CONFIRM ANSWER (EVALUATES CORRECTNESS & SHOWS EXPLANATION)
+    // ======================================================================
+    confirmAnswer() {
+        if (!this.selectedAnswer || this.isAnswered) return;
+
         this.isAnswered = true;
         this.clearAllTimers();
-        
+
         const question = this.questions[this.currentQuestionIndex];
-        const isCorrect = selectedAnswer === question.correct_answer;
+        const isCorrect = this.selectedAnswer === question.correct_answer;
         const timeSpent = Math.max(1, Math.round((Date.now() - this.questionStartTime) / 1000));
-        
+
         this.userAnswers.push({
             questionNumber: this.currentQuestionIndex + 1,
             question: question.question,
-            selectedAnswer,
+            selectedAnswer: this.selectedAnswer,
             correctAnswer: question.correct_answer,
             isCorrect,
             status: isCorrect ? 'correct' : 'incorrect',
             explanation: question.explanation || `The correct answer is "${question.correct_answer}".`,
             timeSpent
         });
-        
+
         if (isCorrect) {
             this.score++;
             document.getElementById('current-score').textContent = this.score;
@@ -975,30 +1077,32 @@ class QuizApp {
         } else {
             this.sound.playIncorrect();
         }
-        
-        // Highlight answer buttons
+
+        // Apply correct/incorrect visual feedback to buttons
         const answerButtons = document.querySelectorAll('.answer-btn');
         answerButtons.forEach(btn => {
             btn.disabled = true;
+            btn.classList.remove('selected');
             const text = btn.querySelector('.answer-btn-text') ? btn.querySelector('.answer-btn-text').textContent : btn.textContent;
             if (text === question.correct_answer) {
                 btn.classList.add('correct');
-            } else if (btn === buttonElement && !isCorrect) {
+            } else if (btn === this.selectedButton && !isCorrect) {
                 btn.classList.add('incorrect');
             }
         });
-        
-        // Show educational explanation immediately
+
+        // Reveal the educational explanation card immediately
         this.showExplanationFeedback(isCorrect, question);
-        
-        // Show Next button and hide Skip button
-        document.getElementById('next-btn').style.display = 'inline-flex';
+
+        // Hide Confirm & Skip buttons, reveal Next Question button
+        document.getElementById('confirm-btn').style.display = 'none';
         document.getElementById('skip-btn').style.display = 'none';
-        
-        // Auto advance after 4s (gives user time to read explanation if they don't click next)
+        document.getElementById('next-btn').style.display = 'inline-flex';
+
+        // Auto-advance timer (gives user 4 seconds to view explanation or click Next immediately)
         this.questionTimeout = setTimeout(() => {
             if (this.isAnswered) this.nextQuestion();
-        }, 4000);
+        }, 4500);
     }
 
     showExplanationFeedback(isCorrect, question) {
@@ -1011,10 +1115,10 @@ class QuizApp {
         
         if (isCorrect) {
             feedbackIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-            feedbackTitle.textContent = 'Correct!';
+            feedbackTitle.textContent = 'Correct Answer!';
         } else {
             feedbackIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
-            feedbackTitle.textContent = `Incorrect! Correct answer: "${question.correct_answer}"`;
+            feedbackTitle.textContent = `Incorrect! Correct Answer: "${question.correct_answer}"`;
         }
         
         explanationText.textContent = question.explanation || `The correct answer is "${question.correct_answer}".`;
@@ -1045,6 +1149,7 @@ class QuizApp {
         const answerButtons = document.querySelectorAll('.answer-btn');
         answerButtons.forEach(btn => {
             btn.disabled = true;
+            btn.classList.remove('selected');
             const text = btn.querySelector('.answer-btn-text') ? btn.querySelector('.answer-btn-text').textContent : btn.textContent;
             if (text === question.correct_answer) {
                 btn.classList.add('correct');
@@ -1053,12 +1158,13 @@ class QuizApp {
         
         this.showExplanationFeedback(false, question);
 
-        document.getElementById('next-btn').style.display = 'inline-flex';
+        document.getElementById('confirm-btn').style.display = 'none';
         document.getElementById('skip-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'inline-flex';
         
         this.questionTimeout = setTimeout(() => {
             if (this.isAnswered) this.nextQuestion();
-        }, 3000);
+        }, 3500);
     }
 
     nextQuestion() {
@@ -1159,26 +1265,34 @@ class QuizApp {
 
         let performanceMessage = '';
         let achievementIcon = '🏆';
+        let accuracyBadge = 'Mastery';
         
         if (percentage >= 90) {
             performanceMessage = `Outstanding mastery, ${this.userData.name}! Excellent score!`;
             achievementIcon = '🏆';
+            accuracyBadge = 'Exceptional';
         } else if (percentage >= 75) {
             performanceMessage = `Great work, ${this.userData.name}! You showed solid comprehension!`;
             achievementIcon = '🥇';
+            accuracyBadge = 'Advanced';
         } else if (percentage >= 60) {
             performanceMessage = `Good progress, ${this.userData.name}! Review the explanations below to improve further.`;
             achievementIcon = '🥈';
+            accuracyBadge = 'Proficient';
         } else {
             performanceMessage = `Keep learning, ${this.userData.name}! Review the explanations below to master these concepts!`;
             achievementIcon = '🥉';
+            accuracyBadge = 'Developing';
         }
         
-        const cleanSub = this.getSubjectName(this.userData.favoriteSubject).replace(/^[^\s]+\s/, '');
-        const personalMessage = `Dedicated learner in ${cleanSub} at ${this.getQualificationName(this.userData.qualification)} level. Continuous practice builds mastery! 🚀`;
+        const accuracyEl = document.getElementById('accuracy-label');
+        if (accuracyEl) accuracyEl.textContent = accuracyBadge;
+
+        const cleanSub = this.getSubjectName(this.userData.favoriteSubject);
+        const personalMessage = `Dedicated learner in ${cleanSub} at ${this.getQualificationName(this.userData.qualification)} tier. Systematic practice builds lasting mastery! 🚀`;
         
         document.getElementById('achievement-icon').textContent = achievementIcon;
-        document.getElementById('results-title').textContent = `${this.userData.name}'s Quiz Report`;
+        document.getElementById('results-title').textContent = `${this.userData.name}'s Performance Dashboard`;
         document.getElementById('performance-message').textContent = performanceMessage;
         document.getElementById('personal-message').textContent = personalMessage;
     }
@@ -1215,7 +1329,7 @@ class QuizApp {
                     </div>` : ''}
                 </div>
                 <div class="review-explanation-box">
-                    <strong><i class="fas fa-lightbulb"></i> Explanation:</strong>
+                    <strong><i class="fas fa-lightbulb color-amber"></i> Educational Concept:</strong>
                     ${ans.explanation}
                 </div>
             `;
@@ -1239,7 +1353,7 @@ class QuizApp {
         } else {
             reviewContainer.style.display = 'none';
             if (arrow) arrow.className = 'fas fa-chevron-down';
-            if (text) text.textContent = 'Review Questions & Explanations';
+            if (text) text.textContent = 'Review Questions & Detailed Explanations';
         }
     }
 
@@ -1256,13 +1370,15 @@ class QuizApp {
         this.userAnswers = [];
         this.score = 0;
         this.isAnswered = false;
+        this.selectedAnswer = null;
+        this.selectedButton = null;
         
         const reviewContainer = document.getElementById('review-container');
         if (reviewContainer) reviewContainer.style.display = 'none';
         const arrow = document.getElementById('review-arrow-icon');
         if (arrow) arrow.className = 'fas fa-chevron-down';
         const text = document.getElementById('toggle-review-text');
-        if (text) text.textContent = 'Review Questions & Explanations';
+        if (text) text.textContent = 'Review Questions & Detailed Explanations';
     }
 
     changeSettings() {
@@ -1275,7 +1391,7 @@ class QuizApp {
     shareResults() {
         this.sound.playClick();
         const percentage = Math.round((this.score / this.questions.length) * 100);
-        const subject = this.getSubjectName(this.userData.favoriteSubject).replace(/^[^\s]+\s/, '');
+        const subject = this.getSubjectName(this.userData.favoriteSubject);
         const shareText = `🎯 ${this.userData.name} scored ${percentage}% on QuizMaster!\n📚 Subject: ${subject}\n🏆 Score: ${this.score}/${this.questions.length} in ${this.totalQuizTime}s\n\nTest your knowledge at QuizMaster! 🚀`;
         
         if (navigator.share) {
@@ -1305,9 +1421,6 @@ class QuizApp {
         }
     }
 
-    // ======================================================================
-    // STATIC CURATED QUESTION BANKS WITH EXPLANATIONS
-    // ======================================================================
     initQuestionBanks() {
         return {
             mathematics: {
@@ -1465,10 +1578,11 @@ class QuizApp {
     }
 }
 
+// Expose classes on window for modularity and testing
+window.ProceduralQuestionGenerator = ProceduralQuestionGenerator;
+window.QuizApp = QuizApp;
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.quizApp = new QuizApp();
 });
-
-window.ProceduralQuestionGenerator = ProceduralQuestionGenerator;
-window.QuizApp = QuizApp;

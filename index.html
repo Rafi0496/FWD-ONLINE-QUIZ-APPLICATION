@@ -24,12 +24,13 @@
                         <i class="fas fa-graduation-cap app-badge-icon"></i>
                     </div>
                     <h1 class="app-title">QuizMaster</h1>
-                    <p class="welcome-description">Personalized learning with dynamic questions and detailed explanations.</p>
+                    <p class="welcome-description">Personalized Learning & Skill Assessment Platform</p>
                 </div>
                 
-                <div class="tactile-card">
+                <div class="tactile-card reg-card">
                     <div class="card-header-bar">
-                        <h2><i class="fas fa-user-circle"></i> Student Registration</h2>
+                        <h2><i class="fas fa-user-circle"></i> Create Your Student Profile</h2>
+                        <span class="step-indicator">Step 1 of 2</span>
                     </div>
                     
                     <form id="registration-form" onsubmit="return false;">
@@ -37,41 +38,43 @@
                             <label for="userName">
                                 <i class="fas fa-user"></i> Full Name
                             </label>
-                            <input type="text" id="userName" class="tactile-input" placeholder="Enter your full name" autocomplete="name" required>
+                            <input type="text" id="userName" class="tactile-input" placeholder="e.g. Alex Morgan" autocomplete="name" required>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="userAge">
-                                <i class="fas fa-birthday-cake"></i> Your Age
-                            </label>
-                            <input type="number" id="userAge" class="tactile-input" placeholder="Enter age (5-100)" min="5" max="100" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="userQualification">
-                                <i class="fas fa-graduation-cap"></i> Current Education Level
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="userQualification" class="tactile-select" required>
-                                    <option value="">Select education tier</option>
-                                    <option value="elementary">Elementary School (1st-5th Grade)</option>
-                                    <option value="middle">Middle School (6th-8th Grade)</option>
-                                    <option value="high">High School (9th-12th Grade)</option>
-                                    <option value="college">College / University</option>
-                                    <option value="graduate">Graduate Degree</option>
-                                    <option value="professional">Working Professional</option>
-                                    <option value="teacher">Teacher / Educator</option>
-                                </select>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="userAge">
+                                    <i class="fas fa-birthday-cake"></i> Age
+                                </label>
+                                <input type="number" id="userAge" class="tactile-input" placeholder="e.g. 18" min="5" max="100" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userQualification">
+                                    <i class="fas fa-graduation-cap"></i> Education Tier
+                                </label>
+                                <div class="select-wrapper">
+                                    <select id="userQualification" class="tactile-select" required>
+                                        <option value="">Select Level</option>
+                                        <option value="elementary">Elementary (1st-5th)</option>
+                                        <option value="middle">Middle School (6th-8th)</option>
+                                        <option value="high">High School (9th-12th)</option>
+                                        <option value="college">College / University</option>
+                                        <option value="graduate">Graduate Degree</option>
+                                        <option value="professional">Professional</option>
+                                        <option value="teacher">Teacher / Educator</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <label for="favoriteSubject">
-                                <i class="fas fa-bookmark"></i> Primary Subject Interest
+                                <i class="fas fa-compass"></i> Primary Focus Subject
                             </label>
                             <div class="select-wrapper">
                                 <select id="favoriteSubject" class="tactile-select" required>
-                                    <option value="">Select your favorite subject</option>
+                                    <option value="">Select Primary Subject</option>
                                     <option value="mathematics">🔢 Mathematics</option>
                                     <option value="science">🔬 Science</option>
                                     <option value="history">📜 History</option>
@@ -85,8 +88,9 @@
                             </div>
                         </div>
                         
-                        <button id="register-btn" type="submit" class="btn btn-tactile-primary">
-                            <i class="fas fa-arrow-right"></i> Continue to Quiz Setup
+                        <button id="register-btn" type="submit" class="btn btn-tactile-primary btn-cta">
+                            <span>Continue to Learning Dashboard</span>
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </form>
                 </div>
@@ -94,92 +98,144 @@
         </div>
     </div>
 
-    <!-- Quiz Settings Page -->
+    <!-- Quiz Settings / Learning Hub Dashboard -->
     <div id="settings-page" class="page">
         <div class="container">
-            <div class="settings-section">
-                <div class="user-greeting">
-                    <div class="greeting-avatar">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h1>Welcome, <span id="user-name-display"></span>!</h1>
-                    <div class="user-meta-tags">
-                        <span class="meta-tag"><i class="fas fa-birthday-cake"></i> Age <span id="user-age-display"></span></span>
-                        <span class="meta-tag"><i class="fas fa-graduation-cap"></i> <span id="user-level-display"></span></span>
-                        <span class="meta-tag"><i class="fas fa-heart"></i> <span id="user-subject-display"></span></span>
-                    </div>
-                </div>
+            <div class="dashboard-wrapper">
                 
-                <div class="tactile-card">
-                    <div class="card-header-bar">
-                        <h2><i class="fas fa-sliders-h"></i> Customize Your Session</h2>
-                    </div>
-                    
-                    <div class="settings-grid">
-                        <div class="form-group">
-                            <label for="category">
-                                <i class="fas fa-book-open"></i> Subject Focus
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="category" class="tactile-select">
-                                    <option value="mathematics">🔢 Mathematics</option>
-                                    <option value="science">🔬 Science</option>
-                                    <option value="history">📜 History</option>
-                                    <option value="geography">🌍 Geography</option>
-                                    <option value="technology">💻 Technology & Coding</option>
-                                    <option value="literature">📚 Literature & Language</option>
-                                    <option value="art">🎨 Art & Culture</option>
-                                    <option value="sports">⚽ Sports & Athletics</option>
-                                    <option value="general">🌟 General Knowledge</option>
-                                </select>
-                            </div>
+                <!-- Student Profile Banner Widget -->
+                <div class="dashboard-profile-bar tactile-card">
+                    <div class="profile-left">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="difficulty">
-                                <i class="fas fa-tachometer-alt"></i> Challenge Level
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="difficulty" class="tactile-select">
-                                    <option value="easy">🟢 Easy (Foundations)</option>
-                                    <option value="medium" selected>🟡 Medium (Standard)</option>
-                                    <option value="hard">🔴 Hard (Advanced)</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="questionCount">
-                                <i class="fas fa-list-ol"></i> Number of Questions
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="questionCount" class="tactile-select">
-                                    <option value="5">5 Questions (Quick)</option>
-                                    <option value="10" selected>10 Questions (Standard)</option>
-                                    <option value="15">15 Questions (Challenge)</option>
-                                    <option value="20">20 Questions (Mastery)</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="timerDuration">
-                                <i class="fas fa-stopwatch"></i> Time per Question
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="timerDuration" class="tactile-select">
-                                    <option value="30">30 Seconds (Fast)</option>
-                                    <option value="60" selected>60 Seconds (Standard)</option>
-                                    <option value="90">90 Seconds (Relaxed)</option>
-                                </select>
+                        <div class="student-details">
+                            <h2>Hello, <span id="user-name-display">Learner</span>! 👋</h2>
+                            <div class="student-badges">
+                                <span class="badge badge-accent"><i class="fas fa-graduation-cap"></i> <span id="user-level-display">High School</span></span>
+                                <span class="badge badge-info"><i class="fas fa-birthday-cake"></i> Age <span id="user-age-display">18</span></span>
+                                <span class="badge badge-primary"><i class="fas fa-heart"></i> <span id="user-subject-display">Technology</span></span>
                             </div>
                         </div>
                     </div>
-                    
-                    <button id="start-quiz-btn" class="btn btn-tactile-primary">
-                        <i class="fas fa-play"></i> Start Quiz with Fresh Questions
-                    </button>
+                    <div class="profile-quick-stats">
+                        <div class="stat-pill">
+                            <i class="fas fa-fire stat-icon-amber"></i>
+                            <div>
+                                <span class="stat-pill-label">Ready</span>
+                                <strong>Level Tuned</strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Main Settings Dashboard Card -->
+                <div class="tactile-card dashboard-main-card">
+                    <div class="card-header-bar">
+                        <h2><i class="fas fa-sliders-h"></i> Quiz Configuration Dashboard</h2>
+                        <span class="card-subtitle">Choose your subject, difficulty, and question rules</span>
+                    </div>
+
+                    <!-- 1. Interactive Subject Selector Tiles -->
+                    <div class="dashboard-section">
+                        <label class="section-title-label"><i class="fas fa-th-large"></i> Select Subject Focus</label>
+                        <div class="subject-tiles-grid" id="subject-tiles-container">
+                            <button type="button" class="subject-tile" data-subject="mathematics">
+                                <div class="tile-icon tile-math"><i class="fas fa-calculator"></i></div>
+                                <span class="tile-name">Mathematics</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="science">
+                                <div class="tile-icon tile-sci"><i class="fas fa-flask"></i></div>
+                                <span class="tile-name">Science</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="technology">
+                                <div class="tile-icon tile-tech"><i class="fas fa-laptop-code"></i></div>
+                                <span class="tile-name">Technology</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="history">
+                                <div class="tile-icon tile-hist"><i class="fas fa-landmark"></i></div>
+                                <span class="tile-name">History</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="geography">
+                                <div class="tile-icon tile-geo"><i class="fas fa-globe-americas"></i></div>
+                                <span class="tile-name">Geography</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="literature">
+                                <div class="tile-icon tile-lit"><i class="fas fa-book-open"></i></div>
+                                <span class="tile-name">Literature</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="art">
+                                <div class="tile-icon tile-art"><i class="fas fa-palette"></i></div>
+                                <span class="tile-name">Art & Culture</span>
+                            </button>
+                            <button type="button" class="subject-tile" data-subject="sports">
+                                <div class="tile-icon tile-sport"><i class="fas fa-running"></i></div>
+                                <span class="tile-name">Sports</span>
+                            </button>
+                            <button type="button" class="subject-tile active" data-subject="general">
+                                <div class="tile-icon tile-gen"><i class="fas fa-lightbulb"></i></div>
+                                <span class="tile-name">General Knowledge</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="category" value="general">
+                    </div>
+
+                    <!-- 2. Interactive Difficulty Pills -->
+                    <div class="dashboard-section">
+                        <label class="section-title-label"><i class="fas fa-signal"></i> Challenge Tier</label>
+                        <div class="selector-pills-row" id="difficulty-pills-container">
+                            <button type="button" class="selector-pill pill-easy" data-difficulty="easy">
+                                <span class="pill-dot"></span>
+                                <strong>Easy</strong>
+                                <small>Foundations</small>
+                            </button>
+                            <button type="button" class="selector-pill pill-medium active" data-difficulty="medium">
+                                <span class="pill-dot"></span>
+                                <strong>Medium</strong>
+                                <small>Balanced</small>
+                            </button>
+                            <button type="button" class="selector-pill pill-hard" data-difficulty="hard">
+                                <span class="pill-dot"></span>
+                                <strong>Hard</strong>
+                                <small>Advanced</small>
+                            </button>
+                        </div>
+                        <input type="hidden" id="difficulty" value="medium">
+                    </div>
+
+                    <!-- 3. Question Count & Timer Controls -->
+                    <div class="dashboard-row-2">
+                        <div class="dashboard-section">
+                            <label class="section-title-label"><i class="fas fa-list-ol"></i> Number of Questions</label>
+                            <div class="selector-pills-row" id="count-pills-container">
+                                <button type="button" class="chip-pill" data-count="5">5 Qs</button>
+                                <button type="button" class="chip-pill active" data-count="10">10 Qs</button>
+                                <button type="button" class="chip-pill" data-count="15">15 Qs</button>
+                                <button type="button" class="chip-pill" data-count="20">20 Qs</button>
+                            </div>
+                            <input type="hidden" id="questionCount" value="10">
+                        </div>
+
+                        <div class="dashboard-section">
+                            <label class="section-title-label"><i class="fas fa-clock"></i> Time per Question</label>
+                            <div class="selector-pills-row" id="timer-pills-container">
+                                <button type="button" class="chip-pill" data-timer="30">30s <small>(Fast)</small></button>
+                                <button type="button" class="chip-pill active" data-timer="60">60s <small>(Standard)</small></button>
+                                <button type="button" class="chip-pill" data-timer="90">90s <small>(Relaxed)</small></button>
+                            </div>
+                            <input type="hidden" id="timerDuration" value="60">
+                        </div>
+                    </div>
+
+                    <!-- Launch Button -->
+                    <div class="dashboard-launch-area">
+                        <button id="start-quiz-btn" class="btn btn-tactile-primary btn-launch">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Start Quiz with Fresh Questions</span>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -216,12 +272,12 @@
                     </div>
                 </div>
                 <div class="hud-item hud-score">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star color-amber"></i>
                     <span>Score: <strong id="current-score">0</strong></span>
                 </div>
             </div>
 
-            <!-- Tactile Inset Progress Track -->
+            <!-- Inset Progress Bar -->
             <div class="quiz-progress-track-inset">
                 <div id="question-progress-fill" class="quiz-progress-bar-fill" style="width: 10%;"></div>
             </div>
@@ -236,11 +292,11 @@
                     </div>
                     
                     <div id="answers-container" class="answers-grid">
-                        <!-- Answers populated dynamically -->
+                        <!-- Populated dynamically with selection radio buttons -->
                     </div>
                 </div>
                 
-                <!-- Educational Explanation Card (Appears after answer is selected) -->
+                <!-- Educational Explanation Card (Appears ONLY after answer is CONFIRMED) -->
                 <div id="feedback-container" class="explanation-card" style="display: none;">
                     <div class="explanation-header">
                         <div class="feedback-status-badge">
@@ -249,16 +305,25 @@
                         </div>
                     </div>
                     <div class="explanation-body">
-                        <div class="explanation-label"><i class="fas fa-lightbulb"></i> Explanation & Key Concept:</div>
+                        <div class="explanation-label"><i class="fas fa-lightbulb"></i> Concept & Explanation:</div>
                         <p id="explanation-text" class="explanation-paragraph"></p>
                     </div>
                 </div>
                 
+                <!-- Quiz Action Bar with CONFIRM ANSWER Button -->
                 <div class="quiz-controls-bar">
-                    <button id="skip-btn" class="btn btn-tactile-secondary" disabled>
+                    <button id="skip-btn" class="btn btn-tactile-secondary">
                         <i class="fas fa-forward"></i>
                         <span id="skip-text">Skip (15s)</span>
                     </button>
+                    
+                    <!-- Primary Confirm Button: User clicks an option, then clicks Confirm to check correctness -->
+                    <button id="confirm-btn" class="btn btn-tactile-confirm" disabled>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm Answer</span>
+                    </button>
+                    
+                    <!-- Next Button: Appears after Confirm is pressed -->
                     <button id="next-btn" class="btn btn-tactile-primary" style="display: none;">
                         <span>Next Question</span>
                         <i class="fas fa-arrow-right"></i>
@@ -266,45 +331,51 @@
                 </div>
 
                 <div class="keyboard-hints-skeuo">
-                    <span><kbd>1</kbd>–<kbd>4</kbd> / <kbd>A</kbd>–<kbd>D</kbd> Select Answer</span>
-                    <span><kbd>Enter</kbd> Next Question</span>
+                    <span><kbd>1</kbd>–<kbd>4</kbd> / <kbd>A</kbd>–<kbd>D</kbd> Select Option</span>
+                    <span><kbd>Enter</kbd> Confirm / Next</span>
                     <span><kbd>S</kbd> Skip</span>
-                    <span><kbd>M</kbd> Mute/Unmute</span>
+                    <span><kbd>M</kbd> Mute</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Results Page -->
+    <!-- Results / Performance Analytics Dashboard -->
     <div id="results-page" class="page">
         <div class="container">
             <div class="results-section">
                 <div class="tactile-card results-main-card">
                     <div class="results-header">
                         <div id="achievement-icon" class="achievement-medal">🏆</div>
-                        <h2 id="results-title">Quiz Completed!</h2>
+                        <h2 id="results-title">Quiz Performance Report</h2>
                         <p id="performance-message" class="performance-subhead"></p>
                     </div>
                     
+                    <!-- Visual Metrics Hub -->
                     <div class="score-display-box">
-                        <div class="score-circle-skeuo">
+                        <div class="score-circle-skeuo" id="score-meter-circle">
                             <span id="final-score" class="score-number">0</span><span class="score-pct">%</span>
                         </div>
                         <div class="metrics-grid">
-                            <div class="metric-card">
-                                <span class="metric-icon"><i class="fas fa-check-circle color-success"></i></span>
+                            <div class="metric-card metric-card-green">
+                                <span class="metric-icon"><i class="fas fa-check-circle"></i></span>
                                 <span class="metric-value"><strong id="correct-answers">0</strong> / <span id="total-questions-result">10</span></span>
                                 <span class="metric-label">Correct Answers</span>
                             </div>
-                            <div class="metric-card">
-                                <span class="metric-icon"><i class="fas fa-stopwatch color-primary"></i></span>
+                            <div class="metric-card metric-card-blue">
+                                <span class="metric-icon"><i class="fas fa-stopwatch"></i></span>
                                 <span class="metric-value"><strong id="time-taken">0</strong>s</span>
-                                <span class="metric-label">Total Time</span>
+                                <span class="metric-label">Total Duration</span>
                             </div>
-                            <div class="metric-card">
-                                <span class="metric-icon"><i class="fas fa-bolt color-warning"></i></span>
+                            <div class="metric-card metric-card-amber">
+                                <span class="metric-icon"><i class="fas fa-bolt"></i></span>
                                 <span class="metric-value"><strong id="avg-time">0</strong>s</span>
-                                <span class="metric-label">Avg / Question</span>
+                                <span class="metric-label">Pace / Question</span>
+                            </div>
+                            <div class="metric-card metric-card-purple">
+                                <span class="metric-icon"><i class="fas fa-medal"></i></span>
+                                <span class="metric-value" id="accuracy-label">Great</span>
+                                <span class="metric-label">Proficiency</span>
                             </div>
                         </div>
                     </div>
@@ -316,25 +387,28 @@
                     <!-- Comprehensive Answer Breakdown & Explanations Section -->
                     <div class="review-accordion-wrapper">
                         <button id="toggle-review-btn" class="btn btn-tactile-neutral review-toggle-btn">
-                            <i class="fas fa-book-reader"></i>
-                            <span id="toggle-review-text">Review Questions & Explanations</span>
+                            <i class="fas fa-clipboard-check color-indigo"></i>
+                            <span id="toggle-review-text">Review Questions & Detailed Explanations</span>
                             <i class="fas fa-chevron-down" id="review-arrow-icon"></i>
                         </button>
                         
                         <div id="review-container" class="review-list-container" style="display: none;">
-                            <!-- Populated with question cards and full educational explanations -->
+                            <!-- Populated dynamically with question cards and explanations -->
                         </div>
                     </div>
                     
                     <div class="results-action-buttons">
                         <button id="retake-quiz-btn" class="btn btn-tactile-primary">
-                            <i class="fas fa-redo"></i> Take Quiz with New Questions
+                            <i class="fas fa-redo"></i>
+                            <span>Take Quiz with New Questions</span>
                         </button>
                         <button id="share-results-btn" class="btn btn-tactile-secondary">
-                            <i class="fas fa-share-alt"></i> Share Results
+                            <i class="fas fa-share-alt"></i>
+                            <span>Share Results</span>
                         </button>
                         <button id="change-settings-btn" class="btn btn-tactile-neutral">
-                            <i class="fas fa-sliders-h"></i> Change Settings
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Dashboard Settings</span>
                         </button>
                     </div>
                 </div>
