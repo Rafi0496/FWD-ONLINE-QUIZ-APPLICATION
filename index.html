@@ -8,8 +8,16 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Tactile Sound Toggle Button -->
-    <div class="sound-toggle-container">
+    <!-- Top Navigation Controls: Theme Color Picker & Sound Toggle -->
+    <div class="top-nav-controls">
+        <div class="theme-palette-picker" title="Select Minimal Background Color">
+            <span class="palette-label"><i class="fas fa-palette"></i> Theme:</span>
+            <button type="button" class="theme-dot active" data-theme="slate" title="Midnight Slate" style="background-color: #0f172a;"></button>
+            <button type="button" class="theme-dot" data-theme="indigo" title="Deep Indigo" style="background-color: #1e1b4b;"></button>
+            <button type="button" class="theme-dot" data-theme="charcoal" title="Minimal Charcoal" style="background-color: #18181b;"></button>
+            <button type="button" class="theme-dot" data-theme="sage" title="Deep Forest Sage" style="background-color: #064e3b;"></button>
+            <button type="button" class="theme-dot" data-theme="sand" title="Warm Paper Sand" style="background-color: #d8cfc4;"></button>
+        </div>
         <button id="sound-toggle-btn" class="tactile-icon-btn" title="Toggle Sound (M)" aria-label="Toggle Sound">
             <i class="fas fa-volume-up" id="sound-icon"></i>
         </button>

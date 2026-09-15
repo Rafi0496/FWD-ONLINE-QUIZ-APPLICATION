@@ -465,11 +465,44 @@ class QuizApp {
     }
 
     init() {
+        this.setupThemePicker();
         this.setupEventListeners();
         this.setupDashboardControls();
         this.setupKeyboardNavigation();
         this.updateSoundIcon();
         this.showPage('registration-page');
+    }
+
+    setupThemePicker() {
+        const savedTheme = localStorage.getItem('quizmaster_theme') || 'slate';
+        if (document.documentElement) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        const themeDots = document.querySelectorAll('.theme-dot');
+        themeDots.forEach(dot => {
+            const theme = dot.getAttribute('data-theme');
+            if (theme === savedTheme) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+
+            dot.addEventListener('click', () => {
+                const selectedTheme = dot.getAttribute('data-theme');
+                if (document.documentElement) {
+                    document.documentElement.setAttribute('data-theme', selectedTheme);
+                }
+                localStorage.setItem('quizmaster_theme', selectedTheme);
+                
+                themeDots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+
+                if (this.sound) {
+                    this.sound.playClick();
+                }
+            });
+        });
     }
 
     setupEventListeners() {
