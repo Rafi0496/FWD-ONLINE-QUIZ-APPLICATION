@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster - Interactive Learning Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sound Toggle Floating Button -->
+    <div class="sound-toggle-container">
+        <button id="sound-toggle-btn" class="sound-toggle-btn" title="Toggle Sound (M)" aria-label="Toggle Sound">
+            <i class="fas fa-volume-up" id="sound-icon"></i>
+        </button>
+    </div>
+
+    <!-- User Registration Page -->
+    <div id="registration-page" class="page active">
+        <div class="container">
+            <div class="welcome-section">
+                <div class="welcome-header">
+                    <i class="fas fa-graduation-cap welcome-icon"></i>
+                    <h1 class="app-title">Welcome to QuizMaster</h1>
+                    <p class="welcome-description">Your personalized learning journey begins here!</p>
+                </div>
+                
+                <div class="registration-card">
+                    <h2><i class="fas fa-user-plus"></i> Tell Us About Yourself</h2>
+                    
+                    <form id="registration-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="userName">
+                                <i class="fas fa-user"></i> Your Name
+                            </label>
+                            <input type="text" id="userName" placeholder="Enter your full name" autocomplete="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userAge">
+                                <i class="fas fa-birthday-cake"></i> Your Age
+                            </label>
+                            <input type="number" id="userAge" placeholder="Enter your age (5-100)" min="5" max="100" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userQualification">
+                                <i class="fas fa-graduation-cap"></i> Current Education Level
+                            </label>
+                            <select id="userQualification" required>
+                                <option value="">Select your current level</option>
+                                <option value="elementary">Elementary School (1st-5th Grade)</option>
+                                <option value="middle">Middle School (6th-8th Grade)</option>
+                                <option value="high">High School (9th-12th Grade)</option>
+                                <option value="college">College/University</option>
+                                <option value="graduate">Graduate Degree</option>
+                                <option value="professional">Working Professional</option>
+                                <option value="teacher">Teacher/Educator</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="favoriteSubject">
+                                <i class="fas fa-heart"></i> Your Favorite Subject
+                            </label>
+                            <select id="favoriteSubject" required>
+                                <option value="">What do you love learning about?</option>
+                                <option value="mathematics">🔢 Mathematics</option>
+                                <option value="science">🔬 Science</option>
+                                <option value="history">📜 History</option>
+                                <option value="geography">🌍 Geography</option>
+                                <option value="literature">📚 Literature</option>
+                                <option value="art">🎨 Art & Culture</option>
+                                <option value="sports">⚽ Sports</option>
+                                <option value="technology">💻 Technology</option>
+                                <option value="general">🌟 General Knowledge</option>
+                            </select>
+                        </div>
+                        
+                        <button id="register-btn" type="submit" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i> Start My Learning Journey
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Settings Page -->
+    <div id="settings-page" class="page">
+        <div class="container">
+            <div class="settings-section">
+                <div class="user-greeting">
+                    <h1>Hello <span id="user-name-display"></span>! 👋</h1>
+                    <p class="user-info">
+                        Age: <span id="user-age-display"></span> | 
+                        Level: <span id="user-level-display"></span>
+                    </p>
+                    <p class="subject-info">
+                        Favorite Subject: <span id="user-subject-display"></span>
+                    </p>
+                    <p class="level-message">We've prepared questions perfect for your interests and level!</p>
+                </div>
+                
+                <div class="settings-card">
+                    <h2><i class="fas fa-cog"></i> Quiz Settings</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label for="category">
+                                <i class="fas fa-list"></i> Subject Focus
+                            </label>
+                            <select id="category">
+                                <option value="mathematics">🔢 Mathematics</option>
+                                <option value="science">🔬 Science</option>
+                                <option value="history">📜 History</option>
+                                <option value="geography">🌍 Geography</option>
+                                <option value="literature">📚 Literature</option>
+                                <option value="art">🎨 Art & Culture</option>
+                                <option value="sports">⚽ Sports</option>
+                                <option value="technology">💻 Technology</option>
+                                <option value="general">🌟 General Knowledge</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="difficulty">
+                                <i class="fas fa-signal"></i> Challenge Level
+                            </label>
+                            <select id="difficulty">
+                                <option value="easy">🟢 Easy</option>
+                                <option value="medium">🟡 Medium</option>
+                                <option value="hard">🔴 Hard</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="questionCount">
+                                <i class="fas fa-question-circle"></i> Number of Questions
+                            </label>
+                            <select id="questionCount">
+                                <option value="5">5 Questions</option>
+                                <option value="10" selected>10 Questions</option>
+                                <option value="15">15 Questions</option>
+                                <option value="20">20 Questions</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="timerDuration">
+                                <i class="fas fa-clock"></i> Time per Question
+                            </label>
+                            <select id="timerDuration">
+                                <option value="30">30 Seconds</option>
+                                <option value="60" selected>60 Seconds</option>
+                                <option value="90">90 Seconds</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="start-quiz-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Let's Start Learning!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Page -->
+    <div id="loading-page" class="page">
+        <div class="container">
+            <div class="loading-section">
+                <div class="loading-spinner"></div>
+                <h2>🎯 Preparing Your Personalized Quiz...</h2>
+                <p id="loading-message">Getting fresh questions just for you!</p>
+                <div class="loading-progress">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quiz-page" class="page">
+        <div class="container">
+            <div class="quiz-header">
+                <div class="quiz-progress">
+                    <i class="fas fa-list-ol"></i>
+                    Question <span id="current-question">1</span> of <span id="total-questions">10</span>
+                </div>
+                <div class="timer-container">
+                    <div id="timer" class="timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer-value">60</span>s
+                    </div>
+                </div>
+                <div class="score-display">
+                    <i class="fas fa-star"></i>
+                    Score: <span id="current-score">0</span>
+                </div>
+            </div>
+
+            <!-- Quiz Progress Bar -->
+            <div class="question-progress-track">
+                <div id="question-progress-fill" class="question-progress-fill" style="width: 10%;"></div>
+            </div>
+            
+            <div class="quiz-content">
+                <div class="question-card">
+                    <div class="question-header">
+                        <i class="fas fa-question-circle question-icon"></i>
+                        <h3 id="question-text" class="question-text"></h3>
+                    </div>
+                    <div id="answers-container" class="answers-container">
+                        <!-- Answers will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Feedback Message -->
+                <div id="feedback-container" class="feedback-container" style="display: none;">
+                    <div class="feedback-message">
+                        <div class="feedback-icon"></div>
+                        <div class="feedback-text"></div>
+                    </div>
+                </div>
+                
+                <div class="quiz-controls">
+                    <button id="skip-btn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-forward"></i>
+                        <span id="skip-text">Skip (15s)</span>
+                    </button>
+                    <button id="next-btn" class="btn btn-primary" style="display: none;">
+                        <i class="fas fa-arrow-right"></i> Next Question (Press Enter)
+                    </button>
+                </div>
+
+                <div class="keyboard-hints">
+                    <span><kbd>1</kbd>-<kbd>4</kbd> Choose answer</span>
+                    <span><kbd>Enter</kbd> Next</span>
+                    <span><kbd>S</kbd> Skip</span>
+                    <span><kbd>M</kbd> Sound</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Page -->
+    <div id="results-page" class="page">
+        <div class="container">
+            <div class="results-section">
+                <div class="results-card">
+                    <div class="results-header">
+                        <div id="achievement-icon" class="achievement-icon">🏆</div>
+                        <h2 id="results-title">Great Job!</h2>
+                    </div>
+                    
+                    <div class="score-summary">
+                        <div class="final-score">
+                            <span id="final-score">0</span>%
+                        </div>
+                        <div class="score-breakdown">
+                            <p><i class="fas fa-check-circle"></i> <span id="correct-answers">0</span> correct out of <span id="total-questions-result">10</span> questions</p>
+                            <p><i class="fas fa-clock"></i> Total time taken: <span id="time-taken">0</span> seconds</p>
+                            <p><i class="fas fa-bolt"></i> Average per question: <span id="avg-time">0</span>s</p>
+                            <p><i class="fas fa-graduation-cap"></i> Level: <span id="user-level-result"></span></p>
+                            <p><i class="fas fa-heart"></i> Subject: <span id="user-subject-result"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-rating">
+                        <h3 id="performance-text">Excellent Work!</h3>
+                        <p id="performance-message">You're making great progress!</p>
+                        <div class="motivational-message">
+                            <p id="personal-message"></p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Answer Review Section -->
+                    <div class="review-section">
+                        <button id="toggle-review-btn" class="btn btn-outline review-toggle-btn">
+                            <i class="fas fa-clipboard-list"></i> <span id="toggle-review-text">Review Answers</span> <i class="fas fa-chevron-down" id="review-arrow-icon"></i>
+                        </button>
+                        <div id="review-container" class="review-container" style="display: none;">
+                            <!-- Populated dynamically with question cards -->
+                        </div>
+                    </div>
+                    
+                    <div class="results-actions">
+                        <button id="retake-quiz-btn" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Try New Questions
+                        </button>
+                        <button id="share-results-btn" class="btn btn-secondary">
+                            <i class="fas fa-share-alt"></i> Share Results
+                        </button>
+                        <button id="change-settings-btn" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> Change Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast" style="display: none;">
+        <i class="fas fa-info-circle" id="toast-icon"></i>
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
