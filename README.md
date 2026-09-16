@@ -6,6 +6,8 @@ The platform combines a minimal skeuomorphic design system with an algorithmic q
 
 ---
 
+## Deployment Link : https://vquizion.vercel.app/
+
 ## Architectural Highlights
 
 ### 1. Minimal Skeuomorphic Design Language
@@ -124,51 +126,6 @@ Vquizion features a built-in procedural sound generator using the browser's nati
 ```
 
 ---
-
-## Local Development Setup
-
-No build steps, compilers, or package installations are required. The project runs directly in any modern web browser conforming to HTML5 and ES6 standards.
-
-### Running with a Local Server
-
-#### Using Python 3
-```bash
-python -m http.server 8080
-```
-
-#### Using Node.js (via npx)
-```bash
-npx serve .
-```
-
-After starting the server, open your web browser and navigate to:
-```text
-http://localhost:8080
-```
-
----
-
-## Deployment Guide (Vercel)
-
-Vquizion is optimized for instant static deployment on Vercel:
-
-1. Push the repository to GitHub:
-   ```bash
-   git push origin main
-   ```
-2. Import the repository into your Vercel Dashboard.
-3. Framework Preset: Select `Other` (Static Site).
-4. Root Directory: `./`
-5. Click Deploy.
-
-### Configuring a Custom Subdomain on Vercel
-To configure a free `.vercel.app` domain (such as `vquizion.vercel.app`):
-1. Navigate to Project Settings > Domains in the Vercel Dashboard.
-2. Enter your desired domain ending in `.vercel.app` (e.g., `vquizion.vercel.app`).
-3. Click Add. Vercel will provision an automated SSL certificate at no cost.
-
----
-
 ## Automated Verification
 
 The application includes standalone test suites located in the repository scratch space to validate functionality:
