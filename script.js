@@ -199,202 +199,542 @@ function decodeHTML(html) {
 // ==========================================================================
 // DYNAMIC PROCEDURAL QUESTION GENERATOR
 // Produces infinite unique questions with complete step-by-step explanations
+// Difficulty Tiers: Easy (40%), Medium (70%), Hard (100% Olympiad / University)
 // ==========================================================================
 class ProceduralQuestionGenerator {
     static generateRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    static generateMathQuestion(tier) {
+    static normalizeDifficulty(input) {
+        if (!input) return 'medium';
+        const str = String(input).toLowerCase();
+        if (str === 'hard' || str === 'college' || str === 'graduate' || str === 'professional') return 'hard';
+        if (str === 'medium' || str === 'high') return 'medium';
+        return 'easy';
+    }
+
+    // --------------------------------------------------------------------------
+    // MATHEMATICS: Easy (40%), Medium (70%), Hard (100%)
+    // --------------------------------------------------------------------------
+    static generateMathQuestion(diffOrTier) {
+        const diff = this.normalizeDifficulty(diffOrTier);
         const id = `proc_math_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        
-        if (tier === 'elementary') {
-            const opType = this.generateRandomInt(1, 4);
-            let a, b, q, ans, explanation, incorrect;
-            
-            if (opType === 1) { // Addition
-                a = this.generateRandomInt(12, 85);
-                b = this.generateRandomInt(15, 75);
-                ans = a + b;
-                q = `What is ${a} + ${b}?`;
-                explanation = `To calculate ${a} + ${b}, add the units and tens places: ${a} + ${b} = ${ans}.`;
-                incorrect = [ans - 2, ans + 10, ans - 10, ans + 1].filter(x => x !== ans).slice(0, 3).map(String);
-            } else if (opType === 2) { // Subtraction
-                a = this.generateRandomInt(45, 99);
-                b = this.generateRandomInt(12, a - 5);
-                ans = a - b;
-                q = `What is ${a} - ${b}?`;
-                explanation = `Subtracting ${b} from ${a}: ${a} - ${b} = ${ans}.`;
-                incorrect = [ans + 2, ans - 10, ans + 10, ans - 1].filter(x => x !== ans).slice(0, 3).map(String);
-            } else if (opType === 3) { // Multiplication
-                a = this.generateRandomInt(4, 12);
-                b = this.generateRandomInt(4, 12);
-                ans = a * b;
-                q = `What is ${a} × ${b}?`;
-                explanation = `Multiplying ${a} by ${b} equals ${ans} (${a} groups of ${b}).`;
-                incorrect = [ans + a, ans - b, ans + 4, ans - 3].filter(x => x !== ans).slice(0, 3).map(String);
-            } else { // Division
-                ans = this.generateRandomInt(3, 12);
-                b = this.generateRandomInt(3, 9);
-                a = ans * b;
-                q = `What is ${a} ÷ ${b}?`;
-                explanation = `Dividing ${a} by ${b}: since ${b} × ${ans} = ${a}, ${a} ÷ ${b} = ${ans}.`;
-                incorrect = [ans + 1, ans - 1, ans + 2, ans + 3].filter(x => x !== ans && x > 0).slice(0, 3).map(String);
-            }
 
-            return {
-                id,
-                question: q,
-                correct_answer: String(ans),
-                incorrect_answers: incorrect,
-                explanation: explanation
-            };
-        }
+        if (diff === 'hard') {
+            // 100% Difficulty: Calculus Integrals, Linear Algebra Eigenvalues, Modular Exponentiation
+            const types = ['integration_by_parts', 'arctan_integral', 'matrix_eigenvalues', 'modular_exponentiation'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
 
-        if (tier === 'middle') {
-            const types = ['algebra', 'percent', 'square_root', 'exponent'];
-            const chosen = types[this.generateRandomInt(0, types.length - 1)];
-
-            if (chosen === 'algebra') {
-                const x = this.generateRandomInt(3, 15);
-                const a = this.generateRandomInt(2, 6);
-                const b = this.generateRandomInt(5, 25);
-                const c = a * x + b;
+            if (type === 'integration_by_parts') {
+                const k = this.generateRandomInt(2, 5);
+                const k2 = k * k;
                 return {
                     id,
-                    question: `Solve for x: ${a}x + ${b} = ${c}`,
-                    correct_answer: String(x),
-                    incorrect_answers: [String(x + 2), String(Math.max(1, x - 2)), String(x + 4)],
-                    explanation: `Step 1: Subtract ${b} from both sides: ${a}x = ${c - b}. Step 2: Divide both sides by ${a}: x = ${c - b} ÷ ${a} = ${x}.`
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `Evaluate the indefinite integral: ∫ x · e^(${k}x) dx`,
+                    correct_answer: `(1/${k})x·e^(${k}x) - (1/${k2})e^(${k}x) + C`,
+                    incorrect_answers: [
+                        `(1/${k})x·e^(${k}x) + (1/${k2})e^(${k}x) + C`,
+                        `x·e^(${k}x) - (1/${k})e^(${k}x) + C`,
+                        `(1/${k2})x²·e^(${k}x) + C`
+                    ],
+                    explanation: `Using Integration by Parts (∫ u dv = u·v - ∫ v du): Let u = x (du = dx) and dv = e^(${k}x) dx (v = (1/${k})e^(${k}x)). Then ∫ x·e^(${k}x) dx = (1/${k})x·e^(${k}x) - ∫ (1/${k})e^(${k}x) dx = (1/${k})x·e^(${k}x) - (1/${k2})e^(${k}x) + C.`
                 };
             }
 
-            if (chosen === 'percent') {
-                const pct = [10, 15, 20, 25, 30, 40, 50, 75][this.generateRandomInt(0, 7)];
-                const total = [40, 60, 80, 120, 150, 200, 240, 300][this.generateRandomInt(0, 7)];
-                const ans = (pct / 100) * total;
+            if (type === 'arctan_integral') {
+                const a = this.generateRandomInt(2, 7);
+                const a2 = a * a;
                 return {
                     id,
-                    question: `What is ${pct}% of ${total}?`,
-                    correct_answer: String(ans),
-                    incorrect_answers: [String(ans + 10), String(Math.max(1, ans - 5)), String(ans + 5)],
-                    explanation: `To find ${pct}% of ${total}: (${pct} ÷ 100) × ${total} = ${ans}.`
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `Evaluate the standard integral: ∫ 1 / (x² + ${a2}) dx`,
+                    correct_answer: `(1/${a}) arctan(x/${a}) + C`,
+                    incorrect_answers: [
+                        `arctan(x/${a}) + C`,
+                        `(1/${a2}) arctan(x) + C`,
+                        `ln(x² + ${a2}) + C`
+                    ],
+                    explanation: `By standard trigonometric substitution (or table integral ∫ 1/(x² + a²) dx = (1/a) arctan(x/a) + C), substituting a = ${a} gives (1/${a}) arctan(x/${a}) + C.`
                 };
             }
 
-            if (chosen === 'square_root') {
-                const root = this.generateRandomInt(11, 20);
-                const square = root * root;
+            if (type === 'matrix_eigenvalues') {
+                const l1 = this.generateRandomInt(2, 5);
+                const l2 = l1 + this.generateRandomInt(1, 4);
+                const trace = l1 + l2;
+                const det = l1 * l2;
+                const a = l1 + 1;
+                const d = trace - a;
+                const bc = a * d - det;
+                const b = 1;
+                const c = bc;
+
                 return {
                     id,
-                    question: `What is the square root of ${square}? (√${square})`,
-                    correct_answer: String(root),
-                    incorrect_answers: [String(root - 1), String(root + 1), String(root + 2)],
-                    explanation: `Because ${root} × ${root} = ${square}, the principal square root √${square} is ${root}.`
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `Find the real eigenvalues of matrix A = [[${a}, ${b}], [${c}, ${d}]].`,
+                    correct_answer: `λ = ${l1}, λ = ${l2}`,
+                    incorrect_answers: [
+                        `λ = ${l1 - 1}, λ = ${l2 + 1}`,
+                        `λ = ${-l1}, λ = ${-l2}`,
+                        `λ = ${trace}, λ = ${det}`
+                    ],
+                    explanation: `The characteristic equation is det(A - λI) = λ² - Tr(A)λ + det(A) = 0. Here, Tr(A) = ${a} + ${d} = ${trace} and det(A) = (${a})(${d}) - (${b})(${c}) = ${det}. Factoring λ² - ${trace}λ + ${det} = (λ - ${l1})(λ - ${l2}) = 0 yields eigenvalues λ = ${l1} and λ = ${l2}.`
                 };
             }
 
-            const base = this.generateRandomInt(2, 6);
-            const exp = base === 2 ? this.generateRandomInt(4, 7) : this.generateRandomInt(2, 4);
-            const ans = Math.pow(base, exp);
+            // modular_exponentiation: Fermat's Little Theorem
+            const primes = [11, 13, 17];
+            const p = primes[this.generateRandomInt(0, primes.length - 1)];
+            const base = this.generateRandomInt(2, 5);
+            const rem = this.generateRandomInt(2, 4);
+            const k = this.generateRandomInt(5, 12);
+            const exp = k * (p - 1) + rem;
+            const target = Math.pow(base, rem) % p;
+            const wrong1 = (target + 2) % p;
+            const wrong2 = (target + p - 1) % p;
+            const wrong3 = (target + 3) % p;
+
             return {
                 id,
-                question: `What is ${base}^${exp} (${base} to the power of ${exp})?`,
-                correct_answer: String(ans),
-                incorrect_answers: [String(ans - base), String(ans + base * 2), String(base * exp)],
-                explanation: `${base}^${exp} means multiplying ${base} by itself ${exp} times: ${Array(exp).fill(base).join(' × ')} = ${ans}.`
+                difficulty: 'hard',
+                levelPct: '100%',
+                question: `Using Fermat's Little Theorem, compute the remainder: ${base}^${exp} mod ${p}`,
+                correct_answer: String(target),
+                incorrect_answers: [String(wrong1), String(wrong2), String(wrong3)].filter(x => x !== String(target)).slice(0, 3),
+                explanation: `Since ${p} is prime and gcd(${base}, ${p}) = 1, Fermat's Little Theorem states ${base}^(${p - 1}) ≡ 1 (mod ${p}). Express ${exp} as ${k} × (${p - 1}) + ${rem}. Thus, ${base}^${exp} ≡ (${base}^${p - 1})^${k} · ${base}^${rem} ≡ 1^${k} · ${base}^${rem} ≡ ${Math.pow(base, rem)} ≡ ${target} (mod ${p}).`
             };
         }
 
-        // High / College Tier
-        const types = ['derivative_power', 'matrix_det', 'quadratic_roots'];
-        const chosen = types[this.generateRandomInt(0, types.length - 1)];
+        if (diff === 'medium') {
+            // 70% Difficulty: Logarithmic Equations, Radical Roots, Double-Angle Trig
+            const types = ['log_solve', 'radical_roots', 'trig_double_angle'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
 
-        if (chosen === 'derivative_power') {
-            const n = this.generateRandomInt(3, 8);
-            const coeff = this.generateRandomInt(2, 5);
-            const newCoeff = coeff * n;
-            const newPower = n - 1;
+            if (type === 'log_solve') {
+                const x = this.generateRandomInt(4, 8);
+                const k = this.generateRandomInt(1, 3);
+                const prod = x * (x - k);
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `Solve for real x: log₂(${prod}) = log₂(x) + log₂(x - ${k})`,
+                    correct_answer: `x = ${x}`,
+                    incorrect_answers: [`x = ${x + 2}`, `x = ${Math.max(1, x - 2)}`, `x = ${x + 4}`],
+                    explanation: `By logarithm product rules, log₂(x) + log₂(x - ${k}) = log₂(x(x - ${k})). Equating arguments: x² - ${k}x = ${prod} ⟹ x² - ${k}x - ${prod} = (x - ${x})(x + ${x - k}) = 0. Since arguments to log must be positive, x = ${x}.`
+                };
+            }
+
+            if (type === 'radical_roots') {
+                const b = this.generateRandomInt(2, 6);
+                const d = [2, 3, 5, 7][this.generateRandomInt(0, 3)];
+                const c = b * b - d;
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `What are the exact solutions to x² - ${2 * b}x + ${c} = 0?`,
+                    correct_answer: `x = ${b} ± √${d}`,
+                    incorrect_answers: [
+                        `x = ${2 * b} ± √${d}`,
+                        `x = ${b} ± √${d + 4}`,
+                        `x = ${-b} ± √${d}`
+                    ],
+                    explanation: `Applying the quadratic formula: x = (-B ± √(B² - 4AC)) / 2A = (${2 * b} ± √(${4 * b * b} - ${4 * c})) / 2 = (${2 * b} ± √(4 · ${d})) / 2 = ${b} ± √${d}.`
+                };
+            }
+
             return {
                 id,
-                question: `What is the derivative with respect to x of f(x) = ${coeff}x^${n}?`,
-                correct_answer: `${newCoeff}x^${newPower}`,
-                incorrect_answers: [`${coeff}x^${newPower}`, `${newCoeff}x^${n}`, `${coeff * (n + 1)}x^${n + 1}`],
-                explanation: `Applying the Power Rule (d/dx [a·x^n] = a·n·x^(n-1)): (${coeff} × ${n})·x^(${n}-1) = ${newCoeff}x^${newPower}.`
+                difficulty: 'medium',
+                levelPct: '70%',
+                question: `If cos(θ) = 4/5, what is the exact value of cos(2θ)?`,
+                correct_answer: `7/25`,
+                incorrect_answers: [`24/25`, `16/25`, `9/25`],
+                explanation: `Using the double-angle identity for cosine: cos(2θ) = 2·cos²(θ) - 1 = 2·(4/5)² - 1 = 2·(16/25) - 1 = 32/25 - 25/25 = 7/25.`
             };
         }
 
-        if (chosen === 'matrix_det') {
-            const a = this.generateRandomInt(1, 6);
-            const b = this.generateRandomInt(1, 4);
-            const c = this.generateRandomInt(1, 5);
-            const d = this.generateRandomInt(2, 6);
-            const det = (a * d) - (b * c);
+        // Easy: 40% Difficulty: System of Linear Equations, 3D Box Diagonals, Combinations
+        const types = ['linear_system', 'box_diagonal', 'combinations'];
+        const type = types[this.generateRandomInt(0, types.length - 1)];
+
+        if (type === 'linear_system') {
+            const x = this.generateRandomInt(2, 6);
+            const y = this.generateRandomInt(1, 5);
+            const eq1 = 2 * x + 3 * y;
+            const eq2 = x - y;
             return {
                 id,
-                question: `What is the determinant of matrix [[${a}, ${b}], [${c}, ${d}]]?`,
-                correct_answer: String(det),
-                incorrect_answers: [String(det + 3), String(det - 4), String(a * d + b * c)],
-                explanation: `The determinant of a 2×2 matrix [[a,b],[c,d]] is calculated as (a·d - b·c) = (${a}·${d}) - (${b}·${c}) = ${a * d} - ${b * c} = ${det}.`
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `Solve the linear system: { 2x + 3y = ${eq1}, x - y = ${eq2} }`,
+                correct_answer: `x = ${x}, y = ${y}`,
+                incorrect_answers: [
+                    `x = ${x + 1}, y = ${y - 1}`,
+                    `x = ${y}, y = ${x}`,
+                    `x = ${x + 2}, y = ${y + 1}`
+                ],
+                explanation: `From the second equation, x = y + ${eq2}. Substitute into the first: 2(y + ${eq2}) + 3y = 5y + ${2 * eq2} = ${eq1} ⟹ 5y = ${eq1 - 2 * eq2} ⟹ y = ${y}. Then x = ${y} + ${eq2} = ${x}.`
             };
         }
 
-        const r1 = this.generateRandomInt(1, 5);
-        const r2 = this.generateRandomInt(2, 6);
-        const bCoeff = -(r1 + r2);
-        const cConst = r1 * r2;
+        if (type === 'box_diagonal') {
+            const triples = [
+                { l: 2, w: 3, h: 6, d: 7 },
+                { l: 1, w: 4, h: 8, d: 9 },
+                { l: 4, w: 4, h: 7, d: 9 },
+                { l: 3, w: 4, h: 12, d: 13 }
+            ];
+            const item = triples[this.generateRandomInt(0, triples.length - 1)];
+            return {
+                id,
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `Find the interior space diagonal length of a rectangular box with dimensions ${item.l} × ${item.w} × ${item.h}.`,
+                correct_answer: `${item.d}`,
+                incorrect_answers: [`${item.d + 2}`, `${item.d - 1}`, `${item.l + item.w + item.h}`],
+                explanation: `The interior 3D diagonal is d = √(l² + w² + h²) = √(${item.l * item.l} + ${item.w * item.w} + ${item.h * item.h}) = √${item.d * item.d} = ${item.d}.`
+            };
+        }
+
+        const n = this.generateRandomInt(6, 9);
+        const ans = (n * (n - 1)) / 2;
         return {
             id,
-            question: `What are the roots of x² ${bCoeff >= 0 ? '+ ' + bCoeff : '- ' + Math.abs(bCoeff)}x + ${cConst} = 0?`,
-            correct_answer: `x = ${r1}, x = ${r2}`,
-            incorrect_answers: [`x = ${-r1}, x = ${-r2}`, `x = ${r1 + 1}, x = ${r2 - 1}`, `x = ${r1 * 2}, x = ${r2}`],
-            explanation: `Factoring the quadratic: (x - ${r1})(x - ${r2}) = 0 gives roots x = ${r1} and x = ${r2}.`
+            difficulty: 'easy',
+            levelPct: '40%',
+            question: `How many distinct combinations of 2 items can be chosen from a group of ${n}? (C(${n}, 2))`,
+            correct_answer: `${ans}`,
+            incorrect_answers: [`${ans + n}`, `${ans - 2}`, `${n * 2}`],
+            explanation: `Combinations formula: C(n, r) = n! / (r! · (n - r)!). Here, C(${n}, 2) = (${n} × ${n - 1}) / 2 = ${ans}.`
         };
     }
 
-    static generateTechQuestion(tier) {
+    // --------------------------------------------------------------------------
+    // TECHNOLOGY: Easy (40%), Medium (70%), Hard (100%)
+    // --------------------------------------------------------------------------
+    static generateTechQuestion(diffOrTier) {
+        const diff = this.normalizeDifficulty(diffOrTier);
         const id = `proc_tech_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        
-        if (tier === 'elementary' || tier === 'middle') {
-            const dec = this.generateRandomInt(5, 31);
-            const bin = dec.toString(2);
-            const inc1 = (dec + 1).toString(2);
-            const inc2 = (dec - 1).toString(2);
-            const inc3 = (dec + 3).toString(2);
+
+        if (diff === 'hard') {
+            const types = ['subnet_cidr', 'cache_bits', 'raft_consensus', 'amortized_complexity'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
+
+            if (type === 'subnet_cidr') {
+                const subnets = [
+                    { cidr: '/27', mask: '255.255.255.224', hosts: 30, block: 32 },
+                    { cidr: '/28', mask: '255.255.255.240', hosts: 14, block: 16 },
+                    { cidr: '/29', mask: '255.255.255.248', hosts: 6, block: 8 }
+                ];
+                const sub = subnets[this.generateRandomInt(0, subnets.length - 1)];
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `For an IPv4 network with prefix ${sub.cidr}, what is the maximum number of usable host IP addresses?`,
+                    correct_answer: `${sub.hosts} usable hosts`,
+                    incorrect_answers: [`${sub.block} usable hosts`, `${sub.hosts + 2} usable hosts`, `${sub.hosts - 4} usable hosts`],
+                    explanation: `With a ${sub.cidr} subnet prefix, host bits = 32 - ${parseInt(sub.cidr.replace('/', ''))} = ${32 - parseInt(sub.cidr.replace('/', ''))}. Total IP addresses = 2^${32 - parseInt(sub.cidr.replace('/', ''))} = ${sub.block}. Subtracting 2 (network identifier and broadcast address) yields ${sub.hosts} usable host IPs.`
+                };
+            }
+
+            if (type === 'cache_bits') {
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `In a 32-bit physical address system with a 64 KB 4-way set associative cache and 64-byte cache lines, how many bits are used for the Set Index?`,
+                    correct_answer: `8 bits`,
+                    incorrect_answers: [`6 bits`, `10 bits`, `16 bits`],
+                    explanation: `Line offset = log₂(64) = 6 bits. Total lines = 64 KB / 64 B = 1024 lines. Number of sets = 1024 / 4 (ways) = 256 sets. Set index bits = log₂(256) = 8 bits. (Tag bits = 32 - 8 - 6 = 18 bits).`
+                };
+            }
+
+            if (type === 'raft_consensus') {
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `In the Raft distributed consensus algorithm, what condition must a candidate satisfy to be elected Leader in term T?`,
+                    correct_answer: `Receive votes from a strict majority (quorum) of nodes in term T`,
+                    incorrect_answers: [
+                        `Receive votes from at least 1/3 of the cluster nodes`,
+                        `Possess the lowest numeric node identifier in the cluster`,
+                        `Acknowledge an active lease from the previous leader`
+                    ],
+                    explanation: `Raft guarantees election safety because any two majorities (quorums) must overlap by at least one node. Thus, requiring a strict majority ensures at most one leader can be elected per term.`
+                };
+            }
+
             return {
                 id,
-                question: `What is the binary representation of decimal number ${dec}?`,
-                correct_answer: bin,
-                incorrect_answers: [inc1, inc2, inc3].filter(x => x !== bin).slice(0, 3),
-                explanation: `To convert decimal ${dec} to binary, express it as a sum of powers of 2. In base 2, ${dec} is written as ${bin}.`
+                difficulty: 'hard',
+                levelPct: '100%',
+                question: `What is the amortized time complexity of Union-Find operations using both Path Compression and Union by Rank?`,
+                correct_answer: `O(α(n)), where α is the Inverse Ackermann function`,
+                incorrect_answers: [`O(log n)`, `O(1) strictly`, `O(n log* n)`],
+                explanation: `Robert Tarjan proved that combining union-by-rank and path compression bounds the amortized cost of m operations on n elements to O(m · α(n)), where α(n) is the extremely slow-growing inverse Ackermann function (practically ≤ 4 for all realistic n).`
             };
         }
 
-        const dec = this.generateRandomInt(16, 255);
-        const hex = dec.toString(16).toUpperCase();
-        const inc1 = (dec + 16).toString(16).toUpperCase();
-        const inc2 = (dec - 1).toString(16).toUpperCase();
-        const inc3 = (dec + 4).toString(16).toUpperCase();
+        if (diff === 'medium') {
+            const types = ['brian_kernighan', 'db_bcnf', 'http2_features'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
+
+            if (type === 'brian_kernighan') {
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `In bit manipulation, what does the expression (n & (n - 1)) accomplish?`,
+                    correct_answer: `Clears the lowest set bit (rightmost 1-bit) in n`,
+                    incorrect_answers: [
+                        `Inverts all bits of n`,
+                        `Checks whether n is an odd number`,
+                        `Multiplies n by 2 using bit-shifting`
+                    ],
+                    explanation: `Subtracting 1 flips the rightmost set bit and all subsequent zeros to ones. Bitwise ANDing n with (n - 1) resets that rightmost 1-bit to 0, forming the basis of Brian Kernighan’s algorithm for counting set bits in O(set bits) time.`
+                };
+            }
+
+            if (type === 'db_bcnf') {
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `In database relational design, what condition is required for a relation to be in Boyce-Codd Normal Form (BCNF)?`,
+                    correct_answer: `For every functional dependency X ➔ Y, X must be a superkey`,
+                    incorrect_answers: [
+                        `All non-prime attributes must depend on the primary key`,
+                        `No transitive dependencies exist between non-key attributes`,
+                        `Every attribute must contain strictly atomic numeric values`
+                    ],
+                    explanation: `BCNF is a stricter version of 3NF. While 3NF permits X ➔ Y if Y is a prime attribute, BCNF strictly requires that the determinant X must always be a candidate key (superkey).`
+                };
+            }
+
+            return {
+                id,
+                difficulty: 'medium',
+                levelPct: '70%',
+                question: `Which fundamental enhancement in HTTP/2 resolves the Head-of-Line (HoL) blocking issue present in HTTP/1.1 pipelining?`,
+                correct_answer: `Binary framing and bi-directional stream multiplexing over a single TCP connection`,
+                incorrect_answers: [
+                    `Switching the underlying transport protocol from TCP to UDP`,
+                    `Compressing HTTP payloads using gzip instead of brotli`,
+                    `Requiring all server responses to be cached indefinitely`
+                ],
+                explanation: `HTTP/2 introduces a binary framing layer that breaks messages into independent frames interleaved over a single TCP connection, allowing concurrent requests and responses without waiting for earlier ones to finish.`
+            };
+        }
+
+        // Easy: 40% Difficulty: Big-O, Unit Conversions, Network Ports
+        const types = ['big_o', 'byte_units', 'ports'];
+        const type = types[this.generateRandomInt(0, types.length - 1)];
+
+        if (type === 'big_o') {
+            return {
+                id,
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `What is the worst-case time complexity of the standard QuickSort algorithm when selecting a fixed pivot?`,
+                correct_answer: `O(n²)`,
+                incorrect_answers: [`O(n log n)`, `O(n)`, `O(log n)`],
+                explanation: `If the pivot chosen is consistently the smallest or largest element (such as on an already sorted array with naive pivot selection), the recursion depth becomes n, degrading QuickSort to O(n²).`
+            };
+        }
+
+        if (type === 'byte_units') {
+            const gib = this.generateRandomInt(2, 8);
+            const mib = gib * 1024;
+            return {
+                id,
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `In standard binary IEC data units, how many Mebibytes (MiB) are in ${gib} Gibibytes (GiB)?`,
+                correct_answer: `${mib} MiB`,
+                incorrect_answers: [`${gib * 1000} MiB`, `${gib * 512} MiB`, `${mib * 2} MiB`],
+                explanation: `In binary data prefixes (IEC standard), 1 GiB = 2¹⁰ MiB = 1024 MiB. Therefore, ${gib} GiB = ${gib} × 1024 = ${mib} MiB.`
+            };
+        }
+
         return {
             id,
-            question: `What is the hexadecimal (base 16) representation of decimal ${dec}?`,
-            correct_answer: `0x${hex}`,
-            incorrect_answers: [`0x${inc1}`, `0x${inc2}`, `0x${inc3}`],
-            explanation: `Dividing ${dec} by 16 gives quotient ${Math.floor(dec / 16)} and remainder ${dec % 16}, resulting in hex 0x${hex}.`
+            difficulty: 'easy',
+            levelPct: '40%',
+            question: `Which standard TCP port is assigned for secure HTTPS web traffic?`,
+            correct_answer: `Port 443`,
+            incorrect_answers: [`Port 80`, `Port 22`, `Port 8080`],
+            explanation: `By IANA standards, standard unencrypted HTTP uses Port 80, while encrypted HTTP over TLS/SSL (HTTPS) uses Port 443.`
         };
     }
 
-    static generateScienceQuestion() {
+    // --------------------------------------------------------------------------
+    // SCIENCE: Easy (40%), Medium (70%), Hard (100%)
+    // --------------------------------------------------------------------------
+    static generateScienceQuestion(diffOrTier) {
+        const diff = this.normalizeDifficulty(diffOrTier);
         const id = `proc_sci_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        const m = this.generateRandomInt(2, 20);
-        const a = this.generateRandomInt(2, 12);
-        const f = m * a;
+
+        if (diff === 'hard') {
+            const types = ['carnot_efficiency', 'lorentz_dilation', 'henderson_hasselbalch', 'de_broglie'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
+
+            if (type === 'carnot_efficiency') {
+                const tcC = 27; // 300 K
+                const thC = 327; // 600 K
+                const eta = ((600 - 300) / 600) * 100;
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `Calculate the maximum theoretical Carnot heat engine efficiency operating between cold reservoir Tc = ${tcC}°C and hot reservoir Th = ${thC}°C.`,
+                    correct_answer: `${eta}%`,
+                    incorrect_answers: [`${Math.round((1 - tcC / thC) * 100)}%`, `75%`, `33%`],
+                    explanation: `Carnot efficiency requires temperatures in Kelvin: Tc = ${tcC} + 273.15 ≈ 300 K, Th = ${thC} + 273.15 ≈ 600 K. Maximum efficiency η = 1 - (Tc / Th) = 1 - (300 / 600) = 0.50 = 50%.`
+                };
+            }
+
+            if (type === 'lorentz_dilation') {
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `According to Special Relativity, if a spacecraft travels at v = 0.8c (where c is the speed of light), what is its Lorentz factor γ?`,
+                    correct_answer: `γ = 1.67 (5/3)`,
+                    incorrect_answers: [`γ = 1.25 (5/4)`, `γ = 2.00`, `γ = 0.60`],
+                    explanation: `The Lorentz factor γ = 1 / √(1 - (v/c)²). For v = 0.8c, v²/c² = 0.64. Then √(1 - 0.64) = √0.36 = 0.6. Thus, γ = 1 / 0.6 = 5/3 ≈ 1.67.`
+                };
+            }
+
+            if (type === 'henderson_hasselbalch') {
+                return {
+                    id,
+                    difficulty: 'hard',
+                    levelPct: '100%',
+                    question: `A buffer solution has [A⁻]/[HA] = 10 and the weak acid has pKa = 4.76. What is the solution pH?`,
+                    correct_answer: `5.76`,
+                    incorrect_answers: [`3.76`, `4.76`, `6.76`],
+                    explanation: `Applying the Henderson-Hasselbalch equation: pH = pKa + log₁₀([A⁻] / [HA]) = 4.76 + log₁₀(10) = 4.76 + 1.00 = 5.76.`
+                };
+            }
+
+            return {
+                id,
+                difficulty: 'hard',
+                levelPct: '100%',
+                question: `Which fundamental equation expresses the de Broglie matter wavelength λ of a particle with linear momentum p?`,
+                correct_answer: `λ = h / p`,
+                incorrect_answers: [`λ = h · p`, `λ = p / c²`, `λ = h / c`],
+                explanation: `Louis de Broglie hypothesized wave-particle duality where any moving particle exhibits a matter wavelength λ = h / p (Planck's constant divided by momentum p = mv).`
+            };
+        }
+
+        if (diff === 'medium') {
+            const types = ['centripetal_acc', 'half_life', 'coulombs_law'];
+            const type = types[this.generateRandomInt(0, types.length - 1)];
+
+            if (type === 'centripetal_acc') {
+                const v = [10, 20, 30][this.generateRandomInt(0, 2)];
+                const r = [2, 5, 10][this.generateRandomInt(0, 2)];
+                const ac = (v * v) / r;
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `What is the centripetal acceleration of a vehicle moving at ${v} m/s around a circular track of radius ${r} m?`,
+                    correct_answer: `${ac} m/s²`,
+                    incorrect_answers: [`${ac / 2} m/s²`, `${v * r} m/s²`, `${ac + 15} m/s²`],
+                    explanation: `Centripetal acceleration is defined as ac = v² / r = (${v})² / ${r} = ${v * v} / ${r} = ${ac} m/s².`
+                };
+            }
+
+            if (type === 'half_life') {
+                const halfLife = [5, 10, 15][this.generateRandomInt(0, 2)];
+                const elapsed = halfLife * 3;
+                return {
+                    id,
+                    difficulty: 'medium',
+                    levelPct: '70%',
+                    question: `A radioactive isotope has a half-life of ${halfLife} years. What fraction of the original sample remains after ${elapsed} years?`,
+                    correct_answer: `1/8 (12.5%)`,
+                    incorrect_answers: [`1/4 (25%)`, `1/16 (6.25%)`, `1/6 (16.7%)`],
+                    explanation: `The number of half-lives elapsed is n = ${elapsed} / ${halfLife} = 3. Remaining fraction = (1/2)ⁿ = (1/2)³ = 1/8 (12.5%).`
+                };
+            }
+
+            return {
+                id,
+                difficulty: 'medium',
+                levelPct: '70%',
+                question: `According to Coulomb’s Law, if the distance r between two point charges is tripled (3r), how does the electrostatic force change?`,
+                correct_answer: `Decreases by a factor of 9 (F / 9)`,
+                incorrect_answers: [
+                    `Decreases by a factor of 3 (F / 3)`,
+                    `Increases by a factor of 3 (3F)`,
+                    `Decreases by a factor of 6 (F / 6)`
+                ],
+                explanation: `Coulomb's Law states F = k·|q₁·q₂| / r². Force obeys an inverse-square law with respect to distance. Tripling r replaces r² with (3r)² = 9r², reducing the force to F/9.`
+            };
+        }
+
+        // Easy: 40% Difficulty: Work/Power, Snell's Law, Conservation of Momentum
+        const types = ['snells_law', 'work_power', 'periodic_trends'];
+        const type = types[this.generateRandomInt(0, types.length - 1)];
+
+        if (type === 'snells_law') {
+            return {
+                id,
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `Which fundamental physics law governs the relationship between the angles of incidence and refraction for light passing between media?`,
+                correct_answer: `Snell's Law (n₁ sin θ₁ = n₂ sin θ₂)`,
+                incorrect_answers: [
+                    `Hooke's Law (F = -kx)`,
+                    `Bragg's Law (nλ = 2d sin θ)`,
+                    `Beer-Lambert Law (A = εlc)`
+                ],
+                explanation: `Snell's Law of Refraction relates the refractive indices of two media (n₁, n₂) to the sines of the angles of incidence (θ₁) and refraction (θ₂): n₁ sin θ₁ = n₂ sin θ₂.`
+            };
+        }
+
+        if (type === 'work_power') {
+            const f = this.generateRandomInt(20, 50);
+            const d = this.generateRandomInt(4, 10);
+            const t = 5;
+            const w = f * d;
+            const p = w / t;
+            return {
+                id,
+                difficulty: 'easy',
+                levelPct: '40%',
+                question: `If a constant force of ${f} N moves an object ${d} m in ${t} seconds in the direction of the force, what average power is delivered?`,
+                correct_answer: `${p} Watts`,
+                incorrect_answers: [`${w} Watts`, `${p * 2} Watts`, `${f * t} Watts`],
+                explanation: `Work done W = Force × displacement = ${f} N × ${d} m = ${w} Joules. Power P = Work / time = ${w} J / ${t} s = ${p} Watts.`
+            };
+        }
+
         return {
             id,
-            question: `According to Newton's Second Law (F = m·a), what force is required to accelerate a ${m} kg object at ${a} m/s²?`,
-            correct_answer: `${f} N`,
-            incorrect_answers: [`${f + 10} N`, `${f - 5} N`, `${m + a} N`],
-            explanation: `Newton's Second Law states Force = mass × acceleration. Therefore, F = ${m} kg × ${a} m/s² = ${f} Newtons (N).`
+            difficulty: 'easy',
+            levelPct: '40%',
+            question: `Across a period from left to right on the periodic table, what is the general trend for first ionization energy?`,
+            correct_answer: `It generally increases due to increasing effective nuclear charge`,
+            incorrect_answers: [
+                `It steadily decreases because atomic radius expands`,
+                `It remains constant across all main group elements`,
+                `It drops to zero for noble gases`
+            ],
+            explanation: `Across a period, protons are added to the nucleus while electrons enter the same principal energy level. The resulting increase in effective nuclear charge pulls electrons tighter, requiring greater energy to remove an electron.`
         };
     }
 }
@@ -831,51 +1171,41 @@ class QuizApp {
     async assembleFreshQuestions() {
         const targetCount = this.quizData.questionCount;
         const subject = this.quizData.category;
-        const tier = this.mapLevelToTier(this.userData.qualification);
+        const diff = this.quizData.difficulty || 'medium';
         let selectedQuestions = [];
 
-        // 1. Live API fetch
-        const apiQuestions = await this.fetchLiveOpenTDBQuestions(subject, this.quizData.difficulty, targetCount);
-        const freshApi = apiQuestions.filter(q => !this.seenQuestionIds.has(q.id));
-        selectedQuestions.push(...freshApi);
-
-        // 2. Add dynamic procedural questions
-        if (selectedQuestions.length < targetCount) {
-            const needed = targetCount - selectedQuestions.length;
-            if (subject === 'mathematics') {
-                for (let i = 0; i < needed; i++) {
-                    selectedQuestions.push(ProceduralQuestionGenerator.generateMathQuestion(tier));
-                }
-            } else if (subject === 'technology') {
-                for (let i = 0; i < Math.min(needed, 4); i++) {
-                    selectedQuestions.push(ProceduralQuestionGenerator.generateTechQuestion(tier));
-                }
-            } else if (subject === 'science') {
-                for (let i = 0; i < Math.min(needed, 3); i++) {
-                    selectedQuestions.push(ProceduralQuestionGenerator.generateScienceQuestion());
-                }
+        // 1. For STEM subjects (Math, Tech, Science), generate authentic procedural questions matching difficulty
+        if (subject === 'mathematics') {
+            const procCount = Math.min(targetCount, 6);
+            for (let i = 0; i < procCount; i++) {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateMathQuestion(diff));
+            }
+        } else if (subject === 'technology') {
+            const procCount = Math.min(targetCount, 5);
+            for (let i = 0; i < procCount; i++) {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateTechQuestion(diff));
+            }
+        } else if (subject === 'science') {
+            const procCount = Math.min(targetCount, 5);
+            for (let i = 0; i < procCount; i++) {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateScienceQuestion(diff));
             }
         }
 
-        // 3. Fill from curated banks with unseen prioritization
+        // 2. Draw from curated question bank matching the chosen difficulty
         if (selectedQuestions.length < targetCount) {
             const subjectBank = this.questionBanks[subject] || this.questionBanks.general;
             let candidatePool = [];
 
-            if (subjectBank[tier]) candidatePool.push(...subjectBank[tier]);
-            ['college', 'high', 'middle', 'elementary'].forEach(t => {
-                if (t !== tier && subjectBank[t]) candidatePool.push(...subjectBank[t]);
-            });
+            if (subjectBank[diff]) candidatePool.push(...subjectBank[diff]);
 
             if (subject !== 'general' && candidatePool.length < targetCount) {
                 const genBank = this.questionBanks.general;
-                if (genBank[tier]) candidatePool.push(...genBank[tier]);
-                if (genBank.high) candidatePool.push(...genBank.high);
-                if (genBank.middle) candidatePool.push(...genBank.middle);
+                if (genBank[diff]) candidatePool.push(...genBank[diff]);
             }
 
             let unseen = candidatePool.filter(q => !this.seenQuestionIds.has(q.id));
-            if (unseen.length === 0) {
+            if (unseen.length === 0 && candidatePool.length > 0) {
                 candidatePool.forEach(q => this.seenQuestionIds.delete(q.id));
                 unseen = candidatePool;
             }
@@ -889,11 +1219,18 @@ class QuizApp {
             }
         }
 
-        // 4. Fallback guarantee
+        // 3. Fallback procedural generator at exact difficulty if still needed
         while (selectedQuestions.length < targetCount) {
-            selectedQuestions.push(ProceduralQuestionGenerator.generateMathQuestion(tier));
+            if (subject === 'technology') {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateTechQuestion(diff));
+            } else if (subject === 'science') {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateScienceQuestion(diff));
+            } else {
+                selectedQuestions.push(ProceduralQuestionGenerator.generateMathQuestion(diff));
+            }
         }
 
+        selectedQuestions = shuffleArray(selectedQuestions);
         selectedQuestions.forEach(q => this.seenQuestionIds.add(q.id));
         this.saveSeenQuestionIds();
 
@@ -974,6 +1311,16 @@ class QuizApp {
         document.getElementById('question-index-badge').textContent = `Q${this.currentQuestionIndex + 1}`;
         document.getElementById('question-text').textContent = question.question;
         this.updateProgressFill();
+        
+        // Update HUD difficulty badge
+        const diffBadge = document.getElementById('quiz-diff-badge');
+        if (diffBadge) {
+            const diff = this.quizData.difficulty || 'medium';
+            diffBadge.className = `hud-diff-pill pill-${diff}`;
+            if (diff === 'hard') diffBadge.textContent = 'Hard 100%';
+            else if (diff === 'medium') diffBadge.textContent = 'Medium 70%';
+            else diffBadge.textContent = 'Easy 40%';
+        }
         
         // Reset selection state
         this.selectedAnswer = null;
@@ -1328,6 +1675,15 @@ class QuizApp {
         document.getElementById('results-title').textContent = `${this.userData.name}'s Performance Dashboard`;
         document.getElementById('performance-message').textContent = performanceMessage;
         document.getElementById('personal-message').textContent = personalMessage;
+
+        const resultsDiffBadge = document.getElementById('results-difficulty-badge');
+        if (resultsDiffBadge) {
+            const diff = this.quizData.difficulty || 'medium';
+            resultsDiffBadge.className = `hud-diff-pill pill-${diff}`;
+            if (diff === 'hard') resultsDiffBadge.textContent = 'Hard (100% Difficulty Tier)';
+            else if (diff === 'medium') resultsDiffBadge.textContent = 'Medium (70% Difficulty Tier)';
+            else resultsDiffBadge.textContent = 'Easy (40% Difficulty Tier)';
+        }
     }
 
     populateReviewSection() {
@@ -1456,158 +1812,858 @@ class QuizApp {
 
     initQuestionBanks() {
         return {
-            mathematics: {
-                elementary: [
-                    {id: 'm_e_1', question: 'What is 7 × 8?', correct_answer: '56', incorrect_answers: ['54', '64', '58'], explanation: '7 multiplied by 8 equals 56.'},
-                    {id: 'm_e_2', question: 'What is 100 - 37?', correct_answer: '63', incorrect_answers: ['53', '67', '73'], explanation: '100 minus 37: 100 - 30 = 70, and 70 - 7 = 63.'},
-                    {id: 'm_e_3', question: 'How many sides does an octagon have?', correct_answer: '8', incorrect_answers: ['6', '7', '10'], explanation: 'An octagon is an 8-sided polygon (the prefix "oct-" means eight).'},
-                    {id: 'm_e_4', question: 'What is 72 ÷ 9?', correct_answer: '8', incorrect_answers: ['6', '7', '9'], explanation: 'Since 9 × 8 = 72, 72 divided by 9 is 8.'}
-                ],
-                middle: [
-                    {id: 'm_m_1', question: 'What is the value of 3⁴ (3 to the 4th power)?', correct_answer: '81', incorrect_answers: ['27', '64', '12'], explanation: '3⁴ = 3 × 3 × 3 × 3 = 81.'},
-                    {id: 'm_m_2', question: 'What is the perimeter of a rectangle with length 9 cm and width 4 cm?', correct_answer: '26 cm', incorrect_answers: ['36 cm', '13 cm', '24 cm'], explanation: 'Perimeter of a rectangle = 2 × (length + width) = 2 × (9 + 4) = 2 × 13 = 26 cm.'},
-                    {id: 'm_m_3', question: 'What is the sum of angles inside any triangle?', correct_answer: '180°', incorrect_answers: ['360°', '90°', '270°'], explanation: 'In Euclidean geometry, the interior angles of any triangle always add up to 180°.'}
-                ],
-                high: [
-                    {id: 'm_h_1', question: 'What is the Pythagorean theorem relating right triangle sides?', correct_answer: 'a² + b² = c²', incorrect_answers: ['a + b = c', 'a² - b² = c²', 'a² + b² = 2c'], explanation: 'In any right triangle, the square of the hypotenuse (c) is equal to the sum of the squares of the other two legs (a² + b² = c²).'},
-                    {id: 'm_h_2', question: 'What is the derivative of sin(x)?', correct_answer: 'cos(x)', incorrect_answers: ['-cos(x)', 'tan(x)', '-sin(x)'], explanation: 'By standard calculus differentiation rules, d/dx [sin(x)] = cos(x).'},
-                    {id: 'm_h_3', question: 'What is the value of log₁₀(1000)?', correct_answer: '3', incorrect_answers: ['2', '10', '100'], explanation: 'log₁₀(1000) = 3 because 10³ = 1000.'}
-                ],
-                college: [
-                    {id: 'm_c_1', question: 'What is Euler’s Identity formula relating e, i, and π?', correct_answer: 'e^(iπ) + 1 = 0', incorrect_answers: ['e^(iπ) = 1', 'e^(π) + i = 0', 'e^(2πi) = -1'], explanation: 'Euler\'s identity e^(iπ) + 1 = 0 connects five fundamental mathematical constants (e, i, π, 1, 0).'},
-                    {id: 'm_c_2', question: 'What is the integral ∫ e^(2x) dx?', correct_answer: '(1/2)e^(2x) + C', incorrect_answers: ['2e^(2x) + C', 'e^(2x) + C', '(1/4)e^(2x) + C'], explanation: 'By substitution u = 2x, du = 2 dx, ∫ e^(2x) dx = (1/2)e^(2x) + C.'}
-                ]
-            },
-            science: {
-                elementary: [
-                    {id: 's_e_1', question: 'Which gas do humans require to breathe in?', correct_answer: 'Oxygen', incorrect_answers: ['Carbon Dioxide', 'Nitrogen', 'Helium'], explanation: 'Humans inhale oxygen (O₂) to generate energy through cellular respiration.'},
-                    {id: 's_e_2', question: 'What is the freezing point of pure water in Celsius?', correct_answer: '0°C', incorrect_answers: ['32°C', '100°C', '-10°C'], explanation: 'Under standard atmospheric pressure, pure water freezes into ice at 0°C (32°F).'},
-                    {id: 's_e_3', question: 'Which planet in our solar system is known as the Red Planet?', correct_answer: 'Mars', incorrect_answers: ['Venus', 'Jupiter', 'Mercury'], explanation: 'Mars appears red due to the prevalence of iron oxide (rust) on its surface.'}
-                ],
-                middle: [
-                    {id: 's_m_1', question: 'What is the powerhouse organelle of eukaryotic cells?', correct_answer: 'Mitochondria', incorrect_answers: ['Nucleus', 'Ribosome', 'Chloroplast'], explanation: 'Mitochondria produce ATP (cellular energy) via oxidative phosphorylation.'},
-                    {id: 's_m_2', question: 'What is the chemical formula for water?', correct_answer: 'H₂O', incorrect_answers: ['CO₂', 'HO₂', 'H₂O₂'], explanation: 'Water consists of 2 hydrogen atoms covalently bonded to 1 oxygen atom (H₂O).'},
-                    {id: 's_m_3', question: 'Which element has the atomic symbol Au?', correct_answer: 'Gold', incorrect_answers: ['Silver', 'Argon', 'Aluminum'], explanation: 'Au is derived from the Latin word "Aurum", which means gold.'}
-                ],
-                high: [
-                    {id: 's_h_1', question: 'What does the First Law of Thermodynamics state?', correct_answer: 'Energy cannot be created or destroyed, only transformed', incorrect_answers: ['Entropy of an isolated system always increases', 'Absolute zero is unreachable', 'Heat flows spontaneously from cold to hot'], explanation: 'The First Law (Conservation of Energy) states total energy in an isolated system remains constant.'},
-                    {id: 's_h_2', question: 'What is the approximate speed of light in a vacuum?', correct_answer: '300,000 km/s', incorrect_answers: ['150,000 km/s', '500,000 km/s', '1,000,000 km/s'], explanation: 'The speed of light c in vacuum is approximately 299,792 km/s (~3 × 10⁸ m/s).'}
-                ],
-                college: [
-                    {id: 's_c_1', question: 'Which subatomic particle mediates the electromagnetic interaction?', correct_answer: 'Photon', incorrect_answers: ['Gluon', 'W Boson', 'Graviton'], explanation: 'In Quantum Electrodynamics (QED), photons are the gauge bosons mediating electromagnetism.'},
-                    {id: 's_c_2', question: 'What is the Gibbs free energy criterion for a spontaneous reaction at constant T and P?', correct_answer: 'ΔG < 0', incorrect_answers: ['ΔG > 0', 'ΔG = 0', 'ΔH > 0'], explanation: 'A negative change in Gibbs free energy (ΔG < 0) indicates a thermodynamically favorable (spontaneous) process.'}
-                ]
-            },
-            history: {
-                elementary: [
-                    {id: 'h_e_1', question: 'Who was the first President of the United States?', correct_answer: 'George Washington', incorrect_answers: ['Abraham Lincoln', 'Thomas Jefferson', 'John Adams'], explanation: 'George Washington served as the first U.S. President from 1789 to 1797.'},
-                    {id: 'h_e_2', question: 'In which ancient country were the Pyramids of Giza constructed?', correct_answer: 'Egypt', incorrect_answers: ['Greece', 'Rome', 'Babylon'], explanation: 'The Pyramids of Giza were built by the ancient Egyptian civilization along the Nile river.'}
-                ],
-                middle: [
-                    {id: 'h_m_1', question: 'In which year did World War II end?', correct_answer: '1945', incorrect_answers: ['1939', '1944', '1950'], explanation: 'World War II concluded in 1945 following the surrender of Axis forces in Europe and Japan.'},
-                    {id: 'h_m_2', question: 'Which historic document was signed in 1215 limiting royal powers in England?', correct_answer: 'Magna Carta', incorrect_answers: ['Bill of Rights', 'Treaty of Paris', 'Declaration of Rights'], explanation: 'Magna Carta ("Great Charter") was signed by King John in 1215, establishing the rule of law.'}
-                ],
-                high: [
-                    {id: 'h_h_1', question: 'What event triggered the outbreak of World War I in 1914?', correct_answer: 'Assassination of Archduke Franz Ferdinand', incorrect_answers: ['Invasion of Poland', 'Sinking of the Lusitania', 'Russian Revolution'], explanation: 'The assassination of Austro-Hungarian Archduke Franz Ferdinand in Sarajevo triggered the alliance chain of WWI.'},
-                    {id: 'h_h_2', question: 'The French Revolution began in 1789 with the storming of which fortress?', correct_answer: 'The Bastille', incorrect_answers: ['Versailles', 'Tuileries', 'Louvre'], explanation: 'The Storming of the Bastille on July 14, 1789 became an iconic symbol of the French Revolution.'}
-                ],
-                college: [
-                    {id: 'h_c_1', question: 'The Peace of Westphalia (1648) established which foundation of modern international relations?', correct_answer: 'National Sovereignty (Westphalian System)', incorrect_answers: ['The European Union', 'Universal Declaration of Human Rights', 'Imperial Mandate'], explanation: 'Westphalia ended the Thirty Years\' War and established the principle of state sovereignty over territory and religion.'}
-                ]
-            },
-            geography: {
-                elementary: [
-                    {id: 'g_e_1', question: 'What is the largest ocean on planet Earth?', correct_answer: 'Pacific Ocean', incorrect_answers: ['Atlantic Ocean', 'Indian Ocean', 'Arctic Ocean'], explanation: 'The Pacific Ocean covers over 63 million square miles, making it Earth\'s largest ocean.'},
-                    {id: 'g_e_2', question: 'What is the capital city of France?', correct_answer: 'Paris', incorrect_answers: ['London', 'Rome', 'Berlin'], explanation: 'Paris is the capital and largest city of France.'}
-                ],
-                middle: [
-                    {id: 'g_m_1', question: 'What is the longest river in the world?', correct_answer: 'Nile River', incorrect_answers: ['Amazon River', 'Mississippi River', 'Yangtze River'], explanation: 'The Nile River in Africa spans approximately 6,650 km (4,132 miles).'},
-                    {id: 'g_m_2', question: 'Which is the largest hot desert on Earth?', correct_answer: 'Sahara Desert', incorrect_answers: ['Gobi Desert', 'Kalahari Desert', 'Atacama Desert'], explanation: 'The Sahara in North Africa is the largest hot desert, spanning over 9 million square km.'}
-                ],
-                high: [
-                    {id: 'g_h_1', question: 'Which strait separates Europe from Africa at the entrance to the Mediterranean?', correct_answer: 'Strait of Gibraltar', incorrect_answers: ['Bosphorus Strait', 'Bering Strait', 'Malacca Strait'], explanation: 'The Strait of Gibraltar connects the Atlantic Ocean to the Mediterranean Sea between Spain and Morocco.'},
-                    {id: 'g_h_2', question: 'What is the highest mountain peak above sea level?', correct_answer: 'Mount Everest', incorrect_answers: ['K2', 'Kangchenjunga', 'Mount Kilimanjaro'], explanation: 'Mount Everest in the Himalayas stands at 8,848.86 meters (29,031.7 ft) above sea level.'}
-                ],
-                college: [
-                    {id: 'g_c_1', question: 'What tectonic process formed the Mariana Trench?', correct_answer: 'Subduction of the Pacific Plate under the Mariana Plate', incorrect_answers: ['Divergent seafloor spreading', 'Transform fault slipping', 'Continental collision'], explanation: 'The Mariana Trench is an oceanic trench formed by convergent subduction of oceanic lithosphere.'}
-                ]
-            },
-            technology: {
-                elementary: [
-                    {id: 't_e_1', question: 'What is considered the "brain" of a computer?', correct_answer: 'CPU (Central Processing Unit)', incorrect_answers: ['Hard Drive', 'Monitor', 'RAM'], explanation: 'The CPU performs instructions and calculations, acting as the primary processor.'},
-                    {id: 't_e_2', question: 'What does "PC" stand for in computing?', correct_answer: 'Personal Computer', incorrect_answers: ['Private Caller', 'Public Central', 'Program Code'], explanation: 'PC stands for Personal Computer, popularized in the 1980s.'}
-                ],
-                middle: [
-                    {id: 't_m_1', question: 'What does HTML stand for in web development?', correct_answer: 'HyperText Markup Language', incorrect_answers: ['Hyper Tool Modern Logic', 'High Tech Modular Language', 'Home Tool Markup Level'], explanation: 'HTML is the standard markup language used to structure web pages.'},
-                    {id: 't_m_2', question: 'How many bits are in one standard byte?', correct_answer: '8 bits', incorrect_answers: ['4 bits', '16 bits', '32 bits'], explanation: '1 Byte is standardized as exactly 8 binary bits.'}
-                ],
-                high: [
-                    {id: 't_h_1', question: 'What is the primary role of DNS on the internet?', correct_answer: 'Translating human domain names into IP addresses', incorrect_answers: ['Encrypting user passwords', 'Routing audio signals', 'Compiling code'], explanation: 'The Domain Name System (DNS) translates human-friendly domains (like example.com) to numeric IP addresses.'},
-                    {id: 't_h_2', question: 'What is the time complexity of Binary Search on a sorted array?', correct_answer: 'O(log n)', incorrect_answers: ['O(n)', 'O(n²)', 'O(1)'], explanation: 'Binary search halves the search space with each step, yielding logarithmic O(log n) time.'}
-                ],
-                college: [
-                    {id: 't_c_1', question: 'In the CAP Theorem for distributed data stores, what does CAP stand for?', correct_answer: 'Consistency, Availability, Partition Tolerance', incorrect_answers: ['Concurrency, Atomicity, Performance', 'Caching, Authentication, Privacy', 'Compatibility, Adaptability, Portability'], explanation: 'Eric Brewer\'s CAP theorem proves distributed systems can guarantee at most 2 of Consistency, Availability, and Partition tolerance.'}
-                ]
-            },
-            literature: {
-                elementary: [
-                    {id: 'l_e_1', question: 'Who wrote the "Harry Potter" book series?', correct_answer: 'J.K. Rowling', incorrect_answers: ['Roald Dahl', 'C.S. Lewis', 'Dr. Seuss'], explanation: 'J.K. Rowling is the British author of the seven-book Harry Potter fantasy series.'}
-                ],
-                middle: [
-                    {id: 'l_m_1', question: 'Who wrote the play "Romeo and Juliet"?', correct_answer: 'William Shakespeare', incorrect_answers: ['Charles Dickens', 'Jane Austen', 'Mark Twain'], explanation: 'William Shakespeare wrote the tragic play Romeo and Juliet in the late 16th century.'}
-                ],
-                high: [
-                    {id: 'l_h_1', question: 'Who authored the classic dystopian novel "1984"?', correct_answer: 'George Orwell', incorrect_answers: ['Aldous Huxley', 'Ray Bradbury', 'H.G. Wells'], explanation: 'George Orwell published 1984 in 1949, introducing concepts like Big Brother and Thoughtcrime.'}
-                ],
-                college: [
-                    {id: 'l_c_1', question: 'Which modernist novel by James Joyce takes place entirely on June 16, 1904?', correct_answer: 'Ulysses', incorrect_answers: ['Finnegans Wake', 'To the Lighthouse', 'The Waste Land'], explanation: 'James Joyce\'s Ulysses chronicles Leopold Bloom\'s passage through Dublin on June 16, 1904.'}
-                ]
-            },
-            art: {
-                elementary: [
-                    {id: 'a_e_1', question: 'Who painted the iconic portrait Mona Lisa?', correct_answer: 'Leonardo da Vinci', incorrect_answers: ['Vincent van Gogh', 'Pablo Picasso', 'Michelangelo'], explanation: 'Leonardo da Vinci painted the Mona Lisa in Florence during the Italian Renaissance.'}
-                ],
-                middle: [
-                    {id: 'a_m_1', question: 'Who painted "The Starry Night"?', correct_answer: 'Vincent van Gogh', incorrect_answers: ['Claude Monet', 'Salvador Dalí', 'Edvard Munch'], explanation: 'Dutch Post-Impressionist painter Vincent van Gogh created The Starry Night in 1889.'}
-                ],
-                high: [
-                    {id: 'a_h_1', question: 'Which Spanish artist created the surrealist painting "The Persistence of Memory" (melting clocks)?', correct_answer: 'Salvador Dalí', incorrect_answers: ['Pablo Picasso', 'Joan Miró', 'Francisco Goya'], explanation: 'Salvador Dalí painted The Persistence of Memory in 1931 as a prominent Surrealist artwork.'}
-                ],
-                college: [
-                    {id: 'a_c_1', question: 'What Italian Renaissance technique describes subtle transitions of tone without hard borders?', correct_answer: 'Sfumato', incorrect_answers: ['Chiaroscuro', 'Trompe-l\'œil', 'Impasto'], explanation: 'Sfumato (derived from Italian "sfumare", to evaporate like smoke) produces softened edges.'}
-                ]
-            },
-            sports: {
-                elementary: [
-                    {id: 'sp_e_1', question: 'How many players are on the field for one soccer team?', correct_answer: '11', incorrect_answers: ['9', '10', '12'], explanation: 'A standard association football (soccer) team fields 11 players including 1 goalkeeper.'}
-                ],
-                middle: [
-                    {id: 'sp_m_1', question: 'How many rings are in the Olympic flag symbol?', correct_answer: '5', incorrect_answers: ['4', '6', '7'], explanation: 'The five interlocking Olympic rings represent the five inhabited continents participating in the Games.'}
-                ],
-                high: [
-                    {id: 'sp_h_1', question: 'Which Grand Slam tennis tournament is played on grass courts?', correct_answer: 'Wimbledon', incorrect_answers: ['US Open', 'French Open', 'Australian Open'], explanation: 'Wimbledon Championships in London is the only tennis Grand Slam played on traditional grass.'}
-                ],
-                college: [
-                    {id: 'sp_c_1', question: 'In what year were the first modern Olympic Games held in Athens?', correct_answer: '1896', incorrect_answers: ['1900', '1888', '1904'], explanation: 'The first modern Olympic Games were organized by the IOC and held in Athens, Greece in 1896.'}
-                ]
-            },
-            general: {
-                elementary: [
-                    {id: 'gen_e_1', question: 'How many days are in a standard leap year?', correct_answer: '366', incorrect_answers: ['365', '364', '360'], explanation: 'A leap year has 366 days because an extra day (February 29) is added.'},
-                    {id: 'gen_e_2', question: 'How many continents are there on Earth?', correct_answer: '7', incorrect_answers: ['5', '6', '8'], explanation: 'The 7 continents are Asia, Africa, North America, South America, Antarctica, Europe, and Australia.'}
-                ],
-                middle: [
-                    {id: 'gen_m_1', question: 'What is the smallest independent nation in the world by area?', correct_answer: 'Vatican City', incorrect_answers: ['Monaco', 'San Marino', 'Liechtenstein'], explanation: 'Vatican City covers an area of about 0.49 square kilometers (121 acres).'},
-                    {id: 'gen_m_2', question: 'What is the currency of Japan?', correct_answer: 'Yen', incorrect_answers: ['Won', 'Yuan', 'Ringgit'], explanation: 'The Japanese Yen (¥) is the official currency of Japan.'}
-                ],
-                high: [
-                    {id: 'gen_h_1', question: 'Which gas makes up approximately 78% of Earth\'s atmosphere?', correct_answer: 'Nitrogen', incorrect_answers: ['Oxygen', 'Carbon Dioxide', 'Argon'], explanation: 'Earth\'s atmosphere consists of approximately 78% nitrogen, 21% oxygen, and 1% trace gases.'}
-                ],
-                college: [
-                    {id: 'gen_c_1', question: 'Which 1992 treaty formally established the European Union?', correct_answer: 'Maastricht Treaty', incorrect_answers: ['Treaty of Rome', 'Treaty of Lisbon', 'Treaty of Versailles'], explanation: 'The Maastricht Treaty (Treaty on European Union) was signed in 1992 and took effect in 1993.'}
-                ]
-            }
-        };
+        mathematics: {
+            hard: [
+                {
+                    id: 'm_h_1',
+                    question: 'What is the Rank-Nullity Theorem for a linear transformation T: V ➔ W where V is finite-dimensional?',
+                    correct_answer: 'dim(V) = rank(T) + nullity(T)',
+                    incorrect_answers: [
+                        'dim(W) = rank(T) - nullity(T)',
+                        'dim(V) = rank(T) × nullity(T)',
+                        'rank(T) = dim(V) + dim(W)'
+                    ],
+                    explanation: 'The fundamental Rank-Nullity Theorem states that for any linear map T on finite-dimensional V, the dimension of the domain V equals the dimension of the image (rank) plus the dimension of the kernel (nullity).'
+                },
+                {
+                    id: 'm_h_2',
+                    question: 'According to Clairaut\'s Theorem on equality of mixed partial derivatives, under what condition does f_xy = f_yx hold?',
+                    correct_answer: 'The second-order mixed partial derivatives f_xy and f_yx are continuous',
+                    incorrect_answers: [
+                        'f(x, y) must be a polynomial function',
+                        'The determinant of the Hessian matrix must be strictly positive',
+                        'f(x, y) must be harmonic (satisfy Laplace\'s equation)'
+                    ],
+                    explanation: 'Clairaut\'s theorem (or Schwarz\'s theorem) states that if the mixed second partial derivatives f_xy and f_yx exist and are continuous on an open disc around a point, they are identical.'
+                },
+                {
+                    id: 'm_h_3',
+                    question: 'What is the Maclaurin series expansion for cos(x)?',
+                    correct_answer: '∑ (-1)ⁿ · x^(2n) / (2n)! from n = 0 to ∞',
+                    incorrect_answers: [
+                        '∑ (-1)ⁿ · x^(2n+1) / (2n+1)! from n = 0 to ∞',
+                        '∑ x^(2n) / (2n)! from n = 0 to ∞',
+                        '∑ (-1)ⁿ · xⁿ / n! from n = 0 to ∞'
+                    ],
+                    explanation: 'Because cos(x) is an even function with derivative cycle {cos, -sin, -cos, sin}, all odd derivatives at 0 are zero and even terms alternate sign: 1 - x²/2! + x⁴/4! - x⁶/6! + ... = ∑ (-1)ⁿ · x^(2n) / (2n)!.'
+                },
+                {
+                    id: 'm_h_4',
+                    question: 'In complex analysis, what necessary condition must a complex function f(z) = u(x,y) + i·v(x,y) satisfy to be holomorphic?',
+                    correct_answer: 'The Cauchy-Riemann equations: ∂u/∂x = ∂v/∂y and ∂u/∂y = -∂v/∂x',
+                    incorrect_answers: [
+                        '∂u/∂x = -∂v/∂y and ∂u/∂y = ∂v/∂x',
+                        '∂²u/∂x² + ∂²v/∂y² = 0 strictly',
+                        'u(x, y) = v(x, y) everywhere on the domain'
+                    ],
+                    explanation: 'The Cauchy-Riemann equations ∂u/∂x = ∂v/∂y and ∂u/∂y = -∂v/∂x are fundamental necessary conditions for complex differentiability (analyticity) of f(z) = u + iv.'
+                }
+            ],
+            medium: [
+                {
+                    id: 'm_m_1',
+                    question: 'What is the sum to infinity of the geometric series S = 6 + 3 + 1.5 + 0.75 + ...?',
+                    correct_answer: '12',
+                    incorrect_answers: ['10', '14', '9'],
+                    explanation: 'First term a = 6 and common ratio r = 1/2. Because |r| < 1, the sum to infinity S_∞ = a / (1 - r) = 6 / (1 - 0.5) = 6 / 0.5 = 12.'
+                },
+                {
+                    id: 'm_m_2',
+                    question: 'By the Change of Base Formula, how is log_b(a) expressed in terms of natural logarithms?',
+                    correct_answer: 'ln(a) / ln(b)',
+                    incorrect_answers: ['ln(b) / ln(a)', 'ln(a - b)', 'ln(a) · ln(b)'],
+                    explanation: 'The change of base theorem states log_b(a) = log_k(a) / log_k(b). Using natural log base e, log_b(a) = ln(a) / ln(b).'
+                },
+                {
+                    id: 'm_m_3',
+                    question: 'If matrix A = [[3, 2], [1, 4]], what is the determinant det(A)?',
+                    correct_answer: '10',
+                    incorrect_answers: ['14', '8', '12'],
+                    explanation: 'For a 2×2 matrix [[a, b], [c, d]], det(A) = ad - bc = (3 × 4) - (2 × 1) = 12 - 2 = 10.'
+                },
+                {
+                    id: 'm_m_4',
+                    question: 'What is the exact value of sin(75°) using the angle sum formula sin(45° + 30°)?',
+                    correct_answer: '(√6 + √2) / 4',
+                    incorrect_answers: ['(√6 - √2) / 4', '(√3 + 1) / 2', '(√2 + 1) / 4'],
+                    explanation: 'sin(45° + 30°) = sin(45°)cos(30°) + cos(45°)sin(30°) = (√2/2)(√3/2) + (√2/2)(1/2) = (√6 + √2) / 4.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'm_e_1',
+                    question: 'What does a discriminant Δ = b² - 4ac < 0 indicate about the roots of ax² + bx + c = 0?',
+                    correct_answer: 'Two distinct complex (non-real) conjugate roots',
+                    incorrect_answers: [
+                        'Two identical real roots',
+                        'Two distinct rational roots',
+                        'One real root and one zero root'
+                    ],
+                    explanation: 'When Δ < 0, the term √(b² - 4ac) yields an imaginary quantity i·√|Δ|, producing two complex conjugate solutions.'
+                },
+                {
+                    id: 'm_e_2',
+                    question: 'Two non-vertical lines in a coordinate plane are perpendicular if and only if:',
+                    correct_answer: 'The product of their slopes is -1 (m₁ · m₂ = -1)',
+                    incorrect_answers: [
+                        'Their slopes are equal (m₁ = m₂)',
+                        'The sum of their slopes is zero (m₁ + m₂ = 0)',
+                        'Their y-intercepts are reciprocal'
+                    ],
+                    explanation: 'Perpendicular lines have negative reciprocal slopes (m₂ = -1/m₁), meaning m₁ · m₂ = -1.'
+                },
+                {
+                    id: 'm_e_3',
+                    question: 'What is the volume formula for a right circular cone with radius r and height h?',
+                    correct_answer: 'V = (1/3)πr²h',
+                    incorrect_answers: ['V = πr²h', 'V = (4/3)πr³', 'V = 2πrh'],
+                    explanation: 'A cone occupies exactly one-third the volume of a cylinder with identical base radius and height: V = (1/3)πr²h.'
+                }
+            ]
+        },
+
+        technology: {
+            hard: [
+                {
+                    id: 't_h_1',
+                    question: 'What is the crucial structural distinction between a B-Tree and a B+ Tree index in modern storage engines?',
+                    correct_answer: 'B+ Trees store actual data pointers exclusively in leaf nodes and link leaf nodes sequentially',
+                    incorrect_answers: [
+                        'B-Trees permit duplicate keys in root nodes whereas B+ Trees forbid them',
+                        'B+ Trees only balance upon deletion while B-Trees balance on insertion',
+                        'B+ Trees require all keys to be hashed using MD5 or SHA-1'
+                    ],
+                    explanation: 'In a B+ tree, internal nodes store only routing keys while leaf nodes store all data pointers and are chained via a linked list, enabling extremely fast range scans and higher internal node branching factors.'
+                },
+                {
+                    id: 't_h_2',
+                    question: 'In the MESI CPU cache coherence protocol, what does the "Exclusive" (E) state designate?',
+                    correct_answer: 'The cache line is present only in the current cache and is clean (matches main memory)',
+                    incorrect_answers: [
+                        'The cache line is present only in the current cache and has been modified',
+                        'The cache line is shared among multiple cores and is read-only',
+                        'The cache line has been invalidated by a snoop request'
+                    ],
+                    explanation: 'MESI stands for Modified, Exclusive, Shared, and Invalid. Exclusive means the cache line resides only in this core’s cache and is identical to main memory (not yet modified).'
+                },
+                {
+                    id: 't_h_3',
+                    question: 'Which SQL ANSI isolation level is the minimum required to prevent "Non-Repeatable Reads"?',
+                    correct_answer: 'Repeatable Read',
+                    incorrect_answers: ['Read Committed', 'Read Uncommitted', 'Serializable'],
+                    explanation: 'Read Committed prevents dirty reads. Repeatable Read locks the read rows to ensure that reading the same row twice within a transaction yields identical data, preventing non-repeatable reads.'
+                },
+                {
+                    id: 't_h_4',
+                    question: 'In RSA public-key cryptography, how are the public exponent e and private exponent d mathematically related?',
+                    correct_answer: 'e · d ≡ 1 (mod φ(n)), where φ(n) = (p - 1)(q - 1)',
+                    incorrect_answers: [
+                        'e + d = p · q',
+                        'e · d = n²',
+                        'd ≡ e² (mod n)'
+                    ],
+                    explanation: 'By Euler\'s totient theorem, the private key d is the modular multiplicative inverse of e modulo φ(n): e · d ≡ 1 (mod (p - 1)(q - 1)).'
+                }
+            ],
+            medium: [
+                {
+                    id: 't_m_1',
+                    question: 'What distinguishes a LEFT OUTER JOIN from an INNER JOIN in relational SQL?',
+                    correct_answer: 'LEFT OUTER JOIN preserves all rows from the left table even if no match exists in the right table',
+                    incorrect_answers: [
+                        'INNER JOIN returns all rows from both tables and fills nulls',
+                        'LEFT OUTER JOIN discards unmatched rows from both tables',
+                        'INNER JOIN only operates on numeric primary keys'
+                    ],
+                    explanation: 'LEFT JOIN returns all records from the left table and matched records from the right; columns from the right table contain NULL when there is no match.'
+                },
+                {
+                    id: 't_m_2',
+                    question: 'What is the standard header size of a minimum IPv4 packet without optional headers?',
+                    correct_answer: '20 bytes',
+                    incorrect_answers: ['40 bytes', '8 bytes', '32 bytes'],
+                    explanation: 'A baseline IPv4 header contains 5 32-bit words (IHL = 5), which equals 5 × 4 = 20 bytes (compared to IPv6 fixed 40 bytes).'
+                },
+                {
+                    id: 't_m_3',
+                    question: 'In Object-Oriented Design, what does the Liskov Substitution Principle (LSP) dictate?',
+                    correct_answer: 'Subtypes must be substitutable for their base types without altering program correctness',
+                    incorrect_answers: [
+                        'Classes should have only one reason to change',
+                        'Software entities should be open for modification and closed for extension',
+                        'High-level modules should depend directly on low-level concrete classes'
+                    ],
+                    explanation: 'LSP (the \'L\' in SOLID) asserts that objects of a superclass should be replaceable with objects of its subclasses without breaking application semantics.'
+                }
+            ],
+            easy: [
+                {
+                    id: 't_e_1',
+                    question: 'Which layer of the OSI model is responsible for logical IP routing and packet forwarding?',
+                    correct_answer: 'Layer 3 (Network Layer)',
+                    incorrect_answers: ['Layer 2 (Data Link Layer)', 'Layer 4 (Transport Layer)', 'Layer 7 (Application Layer)'],
+                    explanation: 'The Network Layer (Layer 3) handles end-to-end packet addressing (IP), routing, and subnet management across interconnected networks.'
+                },
+                {
+                    id: 't_e_2',
+                    question: 'What is the primary difference between Git Merge and Git Rebase?',
+                    correct_answer: 'Rebase rewrites commit history onto a new base commit, while merge creates a dedicated merge commit',
+                    incorrect_answers: [
+                        'Merge deletes earlier commits while rebase creates branches',
+                        'Rebase can only be executed on the remote repository server',
+                        'Merge compresses all commits into a single zip file'
+                    ],
+                    explanation: 'Rebase linearizes project history by reapplying commits one by one on top of the target branch tip, whereas merge joins history with a merge commit.'
+                },
+                {
+                    id: 't_e_3',
+                    question: 'How many total binary bits constitute a standard IPv6 address?',
+                    correct_answer: '128 bits',
+                    incorrect_answers: ['32 bits', '64 bits', '256 bits'],
+                    explanation: 'IPv4 addresses use 32 bits (4 bytes), while IPv6 expands the address space to 128 bits (16 bytes, written as 8 groups of 4 hex digits).'
+                }
+            ]
+        },
+
+        science: {
+            hard: [
+                {
+                    id: 's_h_1',
+                    question: 'What does the Heisenberg Uncertainty Principle state regarding position (x) and linear momentum (p)?',
+                    correct_answer: 'Δx · Δp ≥ ℏ / 2',
+                    incorrect_answers: [
+                        'Δx · Δp = 0',
+                        'Δx / Δp ≥ h',
+                        'Δx · Δp ≤ ℏ / 4'
+                    ],
+                    explanation: 'Derived from non-commuting operators in quantum mechanics ([x, p] = iℏ), the product of standard deviations of position and momentum is bounded below by ℏ/2 (where ℏ = h / 2π).'
+                },
+                {
+                    id: 's_h_2',
+                    question: 'What is the rate-limiting, allosterically regulated control enzyme of the Citric Acid (Krebs) Cycle?',
+                    correct_answer: 'Isocitrate Dehydrogenase',
+                    incorrect_answers: [
+                        'Citrate Synthase',
+                        'Fumarase',
+                        'Malate Dehydrogenase'
+                    ],
+                    explanation: 'Isocitrate dehydrogenase catalyzes the oxidative decarboxylation of isocitrate to α-ketoglutarate, serving as the major rate-determining regulated step (inhibited by ATP and NADH, activated by ADP).'
+                },
+                {
+                    id: 's_h_3',
+                    question: 'In special relativity, what is the full relativistic energy-momentum invariant relation for a particle with rest mass m₀ and momentum p?',
+                    correct_answer: 'E² = (p·c)² + (m₀·c²)²',
+                    incorrect_answers: [
+                        'E = p·c + m₀·c²',
+                        'E² = (p·c)² - (m₀·c²)²',
+                        'E = (1/2)m₀·v² + p·c'
+                    ],
+                    explanation: 'The relativistic dispersion relation is E² = (pc)² + (m₀c²)². For a massless photon (m₀ = 0), this simplifies to E = pc; for a particle at rest (p = 0), it becomes Einstein’s E = m₀c².'
+                },
+                {
+                    id: 's_h_4',
+                    question: 'During eukaryotic DNA replication, which enzyme synthesizes phosphodiester bonds to seal Okazaki fragments on the lagging strand?',
+                    correct_answer: 'DNA Ligase',
+                    incorrect_answers: [
+                        'DNA Topoisomerase (Gyrase)',
+                        'DNA Helicase',
+                        'Single-Stranded Binding Protein (SSB)'
+                    ],
+                    explanation: 'DNA Ligase catalyzes the formation of covalent phosphodiester bonds between adjacent 3\'-hydroxyl and 5\'-phosphate ends of Okazaki fragments after RNA primers are excised.'
+                }
+            ],
+            medium: [
+                {
+                    id: 's_m_1',
+                    question: 'What does Le Chatelier\'s Principle predict will happen to the exothermic equilibrium N₂(g) + 3H₂(g) ⇌ 2NH₃(g) + Heat if temperature is increased?',
+                    correct_answer: 'The equilibrium shifts to the left (towards reactants N₂ and H₂)',
+                    incorrect_answers: [
+                        'The equilibrium shifts to the right (producing more NH₃)',
+                        'The equilibrium position and equilibrium constant K remain unchanged',
+                        'The total gas pressure drops to zero'
+                    ],
+                    explanation: 'Because heat is a product of exothermic reactions, increasing temperature adds thermal energy to the system. The system shifts in the endothermic reverse direction (left) to absorb heat.'
+                },
+                {
+                    id: 's_m_2',
+                    question: 'According to Bernoulli’s Principle for incompressible non-viscous fluid flow, an increase in fluid velocity results in:',
+                    correct_answer: 'A simultaneous decrease in static fluid pressure or potential energy',
+                    incorrect_answers: [
+                        'A proportional increase in static fluid pressure',
+                        'An increase in fluid viscosity',
+                        'A decrease in fluid temperature to absolute zero'
+                    ],
+                    explanation: 'Bernoulli’s equation (P + (1/2)ρv² + ρgh = constant) dictates that along a streamline, an increase in dynamic pressure ((1/2)ρv²) causes a compensating decrease in static pressure P.'
+                },
+                {
+                    id: 's_m_3',
+                    question: 'In genetics, during which specific subphase of Meiosis I does crossing over (homologous genetic recombination) occur?',
+                    correct_answer: 'Prophase I (Pachytene stage)',
+                    incorrect_answers: [
+                        'Metaphase II',
+                        'Anaphase I',
+                        'Telophase I'
+                    ],
+                    explanation: 'During Prophase I of meiosis (specifically the pachytene stage of synapsis), non-sister chromatids of homologous chromosomes exchange genetic material through chiasmata.'
+                }
+            ],
+            easy: [
+                {
+                    id: 's_e_1',
+                    question: 'What does Newton\'s Third Law of Motion assert?',
+                    correct_answer: 'For every action, there is an equal and opposite reaction acting on different bodies',
+                    incorrect_answers: [
+                        'Force equals mass multiplied by acceleration',
+                        'An object in motion remains in motion unless acted on by net external force',
+                        'Total momentum of an open system always increases over time'
+                    ],
+                    explanation: 'Newton\'s Third Law states that when body A exerts a force on body B, body B simultaneously exerts an equal magnitude force in the opposite direction on body A.'
+                },
+                {
+                    id: 's_e_2',
+                    question: 'Why does a solution of pH 3 have a hydrogen ion concentration [H⁺] 100 times greater than a solution of pH 5?',
+                    correct_answer: 'The pH scale is logarithmic (pH = -log₁₀[H⁺]), so each integer step is a 10-fold change',
+                    incorrect_answers: [
+                        'pH values change exponentially by factors of 2',
+                        'pH is defined as the square root of ion concentration',
+                        'Pure water ionizes in ratios of 50 to 1'
+                    ],
+                    explanation: 'Because pH = -log₁₀[H⁺], a decrease of 2 pH units corresponds to [H⁺] increasing by 10² = 100-fold.'
+                },
+                {
+                    id: 's_e_3',
+                    question: 'Which fundamental structural feature distinguishes eukaryotic cells from prokaryotic cells?',
+                    correct_answer: 'Eukaryotes have a membrane-bound nucleus and membrane-bound organelles',
+                    incorrect_answers: [
+                        'Prokaryotes contain mitochondria and chloroplasts',
+                        'Only prokaryotes contain DNA and ribosomes',
+                        'Eukaryotes lack a phospholipid cell membrane'
+                    ],
+                    explanation: 'Eukaryotic cells package genetic material inside a true membrane-bound nucleus and contain compartmentalized organelles (mitochondria, ER, Golgi), which prokaryotes lack.'
+                }
+            ]
+        },
+
+        history: {
+            hard: [
+                {
+                    id: 'h_h_1',
+                    question: 'Which 1494 treaty negotiated by the Papacy divided newly discovered lands outside Europe between Spain and Portugal along a meridian 370 leagues west of the Cape Verde islands?',
+                    correct_answer: 'Treaty of Tordesillas',
+                    incorrect_answers: [
+                        'Treaty of Utrecht',
+                        'Treaty of Zaragoza',
+                        'Treaty of Westphalia'
+                    ],
+                    explanation: 'The Treaty of Tordesillas (1494) established a meridian that awarded newly discovered lands east of the line to Portugal (enabling its claim to Brazil) and west of the line to Castile (Spain).'
+                },
+                {
+                    id: 'h_h_2',
+                    question: 'What 1916 secret diplomatic agreement between the United Kingdom and France partitioned the lands of the collapsing Ottoman Empire into spheres of influence?',
+                    correct_answer: 'Sykes-Picot Agreement',
+                    incorrect_answers: [
+                        'Balfour Declaration',
+                        'Treaty of Sèvres',
+                        'McMahon–Hussein Correspondence'
+                    ],
+                    explanation: 'Negotiated by Mark Sykes and François Georges-Picot with Russian assent, the Sykes-Picot Agreement partitioned Ottoman Arab provinces into British and French zones of direct control or influence.'
+                },
+                {
+                    id: 'h_h_3',
+                    question: 'In 293 AD, Roman Emperor Diocletian instituted which governmental system dividing imperial governance among two Augusti and two Caesars?',
+                    correct_answer: 'The Tetrarchy ("Rule of Four")',
+                    incorrect_answers: [
+                        'The Triumvirate',
+                        'The Principate',
+                        'The Dominatus Triad'
+                    ],
+                    explanation: 'Diocletian created the Tetrarchy to stabilize the Roman Empire, appointing two senior emperors (Augusti) and two junior co-emperors (Caesars) ruling designated geographic quadrants.'
+                }
+            ],
+            medium: [
+                {
+                    id: 'h_m_1',
+                    question: 'The Peace of Westphalia (1648) concluding the Thirty Years\' War is historically celebrated for establishing which core tenet of international relations?',
+                    correct_answer: 'The principle of Westphalian national sovereignty (non-interference in domestic affairs)',
+                    incorrect_answers: [
+                        'The unification of the Holy Roman Empire under a single parliament',
+                        'The universal outlawing of religious protestantism across Europe',
+                        'The formal creation of the League of Nations'
+                    ],
+                    explanation: 'Westphalia established that sovereign states possess exclusive jurisdiction over their domestic lands and religion, forming the cornerstone of modern international statehood.'
+                },
+                {
+                    id: 'h_m_2',
+                    question: 'The Meiji Restoration of 1868 transformed Japan politically by which major shift?',
+                    correct_answer: 'Overthrowing the Tokugawa Shogunate and restoring practical imperial governance and rapid industrialization',
+                    incorrect_answers: [
+                        'Adopting isolationist Sakoku border closure policies',
+                        'Ceding Taiwan and Korea to the Qing Dynasty',
+                        'Abolishing the Japanese Navy in favor of feudal samurai militias'
+                    ],
+                    explanation: 'The Meiji Restoration dismantled the 260-year Tokugawa military shogunate, centralizing authority under Emperor Meiji and embarking on sweeping industrialization, modernization, and legal reform.'
+                },
+                {
+                    id: 'h_m_3',
+                    question: 'Which 1884–1885 European diplomatic conference formalized the "Scramble for Africa" by establishing the Principle of Effective Occupation?',
+                    correct_answer: 'Berlin Conference',
+                    incorrect_answers: ['Congress of Vienna', 'Conference of Paris', 'Treaty of Versailles'],
+                    explanation: 'Organized by Otto von Bismarck, the Berlin Conference laid out guidelines for European colonial expansion in Africa without consulting any African rulers.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'h_e_1',
+                    question: 'What iconic English charter granted by King John at Runnymede in 1215 established that the monarch was not above the law?',
+                    correct_answer: 'Magna Carta (The Great Charter)',
+                    incorrect_answers: ['The English Bill of Rights', 'The Petition of Right', 'Habeas Corpus Act'],
+                    explanation: 'Magna Carta constrained royal arbitrary authority, protected feudal liberties, and guaranteed that free men could not be imprisoned without lawful judgement of their peers.'
+                },
+                {
+                    id: 'h_e_2',
+                    question: 'In what year did the French Revolution break out with the convocation of the Estates-General and the storming of the Bastille?',
+                    correct_answer: '1789',
+                    incorrect_answers: ['1776', '1804', '1815'],
+                    explanation: 'The French Revolution erupted in 1789, overthrowing the Ancien Régime and proclaiming the Declaration of the Rights of Man and of the Citizen.'
+                },
+                {
+                    id: 'h_e_3',
+                    question: 'Which international organization was founded in 1945 in San Francisco to maintain international peace following World War II?',
+                    correct_answer: 'The United Nations (UN)',
+                    incorrect_answers: ['The League of Nations', 'NATO', 'The Warsaw Pact'],
+                    explanation: 'The United Nations was chartered in 1945 by 50 founding nations to succeed the ineffective League of Nations and prevent future global warfare.'
+                }
+            ]
+        },
+
+        geography: {
+            hard: [
+                {
+                    id: 'g_h_1',
+                    question: 'In the Köppen climate classification system, what specific climatic condition does the classification "Csa" represent?',
+                    correct_answer: 'Mediterranean climate with hot, dry summers and mild, wet winters',
+                    incorrect_answers: [
+                        'Humid subtropical climate with year-round rainfall and tropical typhoons',
+                        'Subarctic boreal climate with severe sub-zero winter temperatures',
+                        'Semi-arid cold steppe climate characterized by high wind erosion'
+                    ],
+                    explanation: 'In Köppen classification, \'C\' denotes temperate/mesothermal climates, \'s\' denotes dry summer seasons, and \'a\' denotes hot summer temperatures (warmest month average above 22°C).'
+                },
+                {
+                    id: 'g_h_2',
+                    question: 'What is the Wallace Line in biogeography?',
+                    correct_answer: 'A faunal boundary line drawn in 1859 separating the ecozones of Asia and Australasia',
+                    incorrect_answers: [
+                        'A seismic boundary line marking the deepest section of the San Andreas fault',
+                        'An oceanographic contour line marking 4,000-meter abyssal plains',
+                        'A meteorological jet stream demarcation line in the Southern Hemisphere'
+                    ],
+                    explanation: 'Discovered by Alfred Russel Wallace, the Wallace Line runs between Borneo and Sulawesi (and Bali/Lombok), marking the deep-water trench dividing Asian placenta mammals from Australasian marsupials.'
+                },
+                {
+                    id: 'g_h_3',
+                    question: 'Kaliningrad Oblast, located between Poland and Lithuania on the Baltic Sea, is an administrative exclave of which nation?',
+                    correct_answer: 'Russian Federation',
+                    incorrect_answers: ['Germany', 'Belarus', 'Latvia'],
+                    explanation: 'Formerly Königsberg in East Prussia, Kaliningrad became Soviet territory following WWII and remains a non-contiguous exclave of the Russian Federation.'
+                }
+            ],
+            medium: [
+                {
+                    id: 'g_m_1',
+                    question: 'Due to the Coriolis Effect, moving air currents and oceanic gyres are deflected in which direction in the Northern Hemisphere?',
+                    correct_answer: 'To the right of their direction of motion',
+                    incorrect_answers: [
+                        'To the left of their direction of motion',
+                        'Directly towards the geographic South Pole',
+                        'Vertically upwards towards the stratosphere'
+                    ],
+                    explanation: 'Because Earth rotates eastward under moving air masses, the conservation of angular momentum causes objects in the Northern Hemisphere to deflect to their right, and to the left in the Southern Hemisphere.'
+                },
+                {
+                    id: 'g_m_2',
+                    question: 'Which narrow strait between the Malay Peninsula and the Indonesian island of Sumatra serves as one of the world\'s most vital maritime shipping bottlenecks?',
+                    correct_answer: 'Strait of Malacca',
+                    incorrect_answers: ['Strait of Hormuz', 'Bab-el-Mandeb', 'Sunda Strait'],
+                    explanation: 'The Strait of Malacca connects the Indian Ocean to the South China Sea and carries approximately 25% of all global seaborne traded goods and oil shipments.'
+                },
+                {
+                    id: 'g_m_3',
+                    question: 'What tectonic process formed the Mariana Trench, the deepest trench on Earth at Challenger Deep?',
+                    correct_answer: 'Subduction of the denser Pacific oceanic plate beneath the Mariana Plate',
+                    incorrect_answers: [
+                        'Divergent seafloor spreading creating an expanding oceanic ridge',
+                        'Strike-slip transform faulting grinding laterally across continents',
+                        'Volcanic caldera collapse following massive hotspot basalt eruptions'
+                    ],
+                    explanation: 'At convergent plate boundaries, cold, dense oceanic lithosphere plunges beneath another plate into the mantle, carving deep trenches like the Mariana Trench (~11,034 m deep).'
+                }
+            ],
+            easy: [
+                {
+                    id: 'g_e_1',
+                    question: 'The Prime Meridian, established as the reference line of 0° longitude, passes through which observatory?',
+                    correct_answer: 'Royal Observatory in Greenwich, London, England',
+                    incorrect_answers: [
+                        'Observatory of Paris, France',
+                        'Smithsonian Astrophysical Observatory in Washington, D.C.',
+                        'Teide Observatory in the Canary Islands'
+                    ],
+                    explanation: 'The International Meridian Conference of 1884 officially established the meridian passing through the Greenwich transit circle as the universal Prime Meridian.'
+                },
+                {
+                    id: 'g_e_2',
+                    question: 'Which is the longest continental mountain range in the world, spanning over 7,000 kilometers along western South America?',
+                    correct_answer: 'The Andes Mountains',
+                    incorrect_answers: ['The Himalayas', 'The Rocky Mountains', 'The Great Dividing Range'],
+                    explanation: 'The Andes extend continuously through seven South American nations along the Pacific coast for over 7,000 km (4,350 miles).'
+                },
+                {
+                    id: 'g_e_3',
+                    question: 'What is the latitude line for the Tropic of Cancer in the Northern Hemisphere?',
+                    correct_answer: 'Approximately 23.5° North',
+                    incorrect_answers: ['66.5° North', '0° Equator', '45.0° North'],
+                    explanation: 'The Tropic of Cancer lies at approximately 23.44° North of the Equator, representing the northernmost latitude where the Sun can appear directly overhead at the June solstice.'
+                }
+            ]
+        },
+
+        literature: {
+            hard: [
+                {
+                    id: 'l_h_1',
+                    question: 'Which poetic rhyme scheme structure was invented by Dante Alighieri for his epic theological masterpiece, The Divine Comedy?',
+                    correct_answer: 'Terza Rima (aba bcb cdc ded ...)',
+                    incorrect_answers: [
+                        'Ottava Rima (abababcc)',
+                        'Spenserian Stanza (ababbcbcc)',
+                        'Villanelle envelope rhyme'
+                    ],
+                    explanation: 'Dante invented Terza Rima, a three-line stanza form using interlocking tercet rhymes (aba, bcb, cdc) reflecting the holy Trinity and driving narrative continuity.'
+                },
+                {
+                    id: 'l_h_2',
+                    question: 'In Albert Camus\'s 1942 philosophical novel The Stranger (L\'Étranger), what pivotal event precipitates the protagonist Meursault\'s trial and condemnation?',
+                    correct_answer: 'His shooting of an unnamed Arab man on an Algiers beach under the blinding glare of the Sun',
+                    incorrect_answers: [
+                        'His political betrayal of French colonial administrators during an uprising',
+                        'His theft of government funds from a maritime shipping company',
+                        'His refusal to enlist in the military during World War I'
+                    ],
+                    explanation: 'Meursault shoots an Arab man on a sun-drenched beach; during his trial, the court condemns him not merely for the homicide, but for his emotional detachment and refusal to weep at his mother\'s funeral.'
+                },
+                {
+                    id: 'l_h_3',
+                    question: 'James Joyce\'s landmark 1922 modernist novel Ulysses constructs an intricate modern parallel to Homer\'s Odyssey set entirely in which city on June 16, 1904?',
+                    correct_answer: 'Dublin, Ireland',
+                    incorrect_answers: ['London, England', 'Edinburgh, Scotland', 'Paris, France'],
+                    explanation: 'Ulysses chronicles the movements and thoughts of Leopold Bloom, Stephen Dedalus, and Molly Bloom across Dublin over the course of a single day (June 16, 1904, celebrated as Bloomsday).'
+                }
+            ],
+            medium: [
+                {
+                    id: 'l_m_1',
+                    question: 'In George Orwell’s dystopian novel 1984, what official government language is designed to narrow the range of thought and eliminate political heresy?',
+                    correct_answer: 'Newspeak',
+                    incorrect_answers: ['Doubletalk', 'Oldspeak', 'Ministry Jargon'],
+                    explanation: 'Newspeak is Oceania\'s controlled language engineered by the Party to eradicate nuanced words, making independent concepts (crimethink) literally impossible to formulate.'
+                },
+                {
+                    id: 'l_m_2',
+                    question: 'In Fyodor Dostoevsky’s psychological novel Crime and Punishment, what pseudo-philosophical theory motivates Rodion Raskolnikov to murder the pawnbroker?',
+                    correct_answer: 'The belief that "extraordinary" men have the moral right to transgress societal laws for greater ends',
+                    incorrect_answers: [
+                        'A desire to lead a violent nihilist revolution against the Czarist aristocracy',
+                        'Delusions caused by an inheritance conspiracy orchestrated by Luzhin',
+                        'A religious vow to eliminate money-lenders from St. Petersburg'
+                    ],
+                    explanation: 'Raskolnikov published an article arguing that exceptional historical figures (like Napoleon) are above ordinary moral conventions. He murders Alyona Ivanovna to test if he is an \'extraordinary man\'.'
+                },
+                {
+                    id: 'l_m_3',
+                    question: 'Published in 1818 by Mary Shelley at age 20, which novel is widely credited as the first modern work of science fiction?',
+                    correct_answer: 'Frankenstein; or, The Modern Prometheus',
+                    incorrect_answers: ['The Time Machine', 'Dracula', 'The Strange Case of Dr Jekyll and Mr Hyde'],
+                    explanation: 'Mary Shelley created the science fiction genre by depicting scientific experimentation (galvanism and natural philosophy) rather than supernatural sorcery as the catalyst for Victor Frankenstein\'s creation.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'l_e_1',
+                    question: 'What is the literary term for attributing human feelings, intentions, or characteristics to non-human entities or objects?',
+                    correct_answer: 'Personification',
+                    incorrect_answers: ['Alliteration', 'Hyperbole', 'Onomatopoeia'],
+                    explanation: 'Personification is a figure of speech in which an idea, animal, or inanimate object is given human attributes, emotions, or behaviors (e.g. "the wind whispered through the pines").'
+                },
+                {
+                    id: 'l_e_2',
+                    question: 'Which of the following is an example of a dramatic soliloquy in William Shakespeare\'s Hamlet?',
+                    correct_answer: '"To be, or not to be, that is the question"',
+                    incorrect_answers: [
+                        '"Friends, Romans, countrymen, lend me your ears"',
+                        '"All the world\'s a stage, and all the men and women merely players"',
+                        '"Shall I compare thee to a summer\'s day?"'
+                    ],
+                    explanation: 'Hamlet\'s Act 3 soliloquy ("To be, or not to be") explores existential suffering, mortality, and the fear of the unknown after death.'
+                },
+                {
+                    id: 'l_e_3',
+                    question: 'What is the essential technical difference between a metaphor and a simile?',
+                    correct_answer: 'A simile uses connective words such as "like" or "as", whereas a metaphor makes a direct equation',
+                    incorrect_answers: [
+                        'A metaphor only appears in poetry while similes appear in prose',
+                        'A simile exaggerates reality while a metaphor expresses literal facts',
+                        'Metaphors must rhyme while similes do not require meter'
+                    ],
+                    explanation: 'Both compare two unrelated things, but similes employ explicit comparison words like "as brave as a lion", while metaphors state "he is a lion in battle".'
+                }
+            ]
+        },
+
+        art: {
+            hard: [
+                {
+                    id: 'a_h_1',
+                    question: 'Which dramatic painting technique, heavily championed by Baroque master Caravaggio, utilizes extreme contrasts of deep dark shadows and piercing shafts of light?',
+                    correct_answer: 'Tenebrism (Chiaroscuro)',
+                    incorrect_answers: ['Sfumato', 'Impasto', 'Trompe-l\'œil'],
+                    explanation: 'Tenebrism (from Italian "tenebroso", meaning dark/gloomy) is a heightened form of chiaroscuro where darkness dominates the canvas and illuminated figures emerge dramatically from black backgrounds.'
+                },
+                {
+                    id: 'a_h_2',
+                    question: 'Founded in Weimar, Germany in 1919 by Walter Gropius, which revolutionary school pioneered modern design by uniting fine art, functional craft, and industrial architecture?',
+                    correct_answer: 'The Bauhaus',
+                    incorrect_answers: ['De Stijl', 'Art Nouveau', 'The Vienna Secession'],
+                    explanation: 'The Staatliches Bauhaus revolutionized 20th-century design under the principle that "form follows function", unifying fine art, typography, craft, and mass production.'
+                },
+                {
+                    id: 'a_h_3',
+                    question: 'In Classical Greek architecture, which column order is distinguished by ornate capitals adorned with sculpted acanthus leaves?',
+                    correct_answer: 'Corinthian Order',
+                    incorrect_answers: ['Doric Order', 'Ionic Order', 'Tuscan Order'],
+                    explanation: 'The three classical Greek orders are Doric (simple round capital), Ionic (twin spiral volutes), and Corinthian (the most decorative, sculpted with tiered acanthus leaves).'
+                }
+            ],
+            medium: [
+                {
+                    id: 'a_m_1',
+                    question: 'Which Renaissance painting technique, exemplified in Leonardo da Vinci’s Mona Lisa, produces softened transitions of shade without harsh outlines?',
+                    correct_answer: 'Sfumato',
+                    incorrect_answers: ['Fresco', 'Grisaille', 'Encaustic'],
+                    explanation: 'Sfumato (derived from Italian "sfumare", to evaporate like smoke) blends colors and tones imperceptibly to create atmospheric, realistic portraits without crisp contour borders.'
+                },
+                {
+                    id: 'a_m_2',
+                    question: 'Which 20th-century avant-garde movement, led by Salvador Dalí and René Magritte, explored dream analysis and subconscious psychoanalytic imagery?',
+                    correct_answer: 'Surrealism',
+                    incorrect_answers: ['Futurism', 'Dadaism', 'Constructivism'],
+                    explanation: 'Launched by André Breton\'s 1924 Surrealist Manifesto and inspired by Freud\'s psychoanalysis, Surrealism sought to liberate the creative unconscious through bizarre, dreamlike juxtapositions.'
+                },
+                {
+                    id: 'a_m_3',
+                    question: 'Georges Seurat pioneered which post-impressionist technique of painting in tiny, discrete dots of pure color that blend optically in the viewer\'s eye?',
+                    correct_answer: 'Pointillism (Divisionism)',
+                    incorrect_answers: ['Action Painting', 'Sgraffito', 'Cloisonnism'],
+                    explanation: 'Seurat developed Pointillism (exemplified in "A Sunday on La Grande Jatte"), applying systematic dots of complementary colors based on optical science rather than mixing paints on a palette.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'a_e_1',
+                    question: 'Which Italian master painted the biblical frescoes across the ceiling of the Sistine Chapel between 1508 and 1512?',
+                    correct_answer: 'Michelangelo Buonarroti',
+                    incorrect_answers: ['Leonardo da Vinci', 'Raphael Sanzio', 'Sandro Botticelli'],
+                    explanation: 'Commissioned by Pope Julius II, Michelangelo spent four years painting the Sistine Chapel ceiling, including "The Creation of Adam" and nine scenes from the Book of Genesis.'
+                },
+                {
+                    id: 'a_e_2',
+                    question: 'In classical drawing and painting, what is the point on the horizon line where parallel receding lines appear to converge?',
+                    correct_answer: 'The Vanishing Point',
+                    incorrect_answers: ['The Focal Zenith', 'The Nadir Point', 'The Picture Plane'],
+                    explanation: 'In linear perspective codified by Filippo Brunelleschi, orthogonal lines recede toward a common vanishing point on the horizon line to construct three-dimensional depth.'
+                },
+                {
+                    id: 'a_e_3',
+                    question: 'Which art movement co-founded by Pablo Picasso and Georges Braque fragmented objects into geometric facets and multiple simultaneous perspectives?',
+                    correct_answer: 'Cubism',
+                    incorrect_answers: ['Fauvism', 'Romanticism', 'Pop Art'],
+                    explanation: 'Beginning around 1907 with Picasso\'s "Les Demoiselles d\'Avignon", Cubism dismantled traditional single-point Renaissance perspective in favor of fractured geometric planes.'
+                }
+            ]
+        },
+
+        sports: {
+            hard: [
+                {
+                    id: 'sp_h_1',
+                    question: 'Why was the standard marathon distance officially set to 26 miles 385 yards (42.195 km) at the 1908 London Olympic Games?',
+                    correct_answer: 'To start at Windsor Castle and finish precisely in front of the Royal Box at White City Stadium',
+                    incorrect_answers: [
+                        'It was the exact surveyed distance between Athens and the ancient plain of Marathon',
+                        'It represented the maximum distance a human could run without electrolyte depletion',
+                        'It was calibrated to equal 100 laps around the Roman Circus Maximus'
+                    ],
+                    explanation: 'The British Royal Family requested that the marathon begin at Windsor Castle and finish right beneath the Royal Box at White City Stadium, permanently setting the distance to 42.195 km.'
+                },
+                {
+                    id: 'sp_h_2',
+                    question: 'In Formula 1 racing regulations, under what condition is a driver permitted to activate the Drag Reduction System (DRS)?',
+                    correct_answer: 'Within a designated DRS activation zone when less than 1.0 second behind a preceding car',
+                    incorrect_answers: [
+                        'Anywhere on the circuit provided engine temperature is below 110°C',
+                        'Exclusively during the first three laps of a Grand Prix race',
+                        'Only after executing an undercut pit stop for soft compound tires'
+                    ],
+                    explanation: 'DRS opens an aerodynamic flap on the rear wing to reduce drag and promote overtaking; it is electronically enabled only when a chasing car is within 1 second of the leading car at detection points.'
+                },
+                {
+                    id: 'sp_h_3',
+                    question: 'Which French footballer holds the record for the most goals scored in a single FIFA World Cup tournament, scoring 13 goals in 1958?',
+                    correct_answer: 'Just Fontaine',
+                    incorrect_answers: ['Pelé', 'Gerd Müller', 'Miroslav Klose'],
+                    explanation: 'Just Fontaine scored an incredible 13 goals in only 6 matches for France during the 1958 World Cup in Sweden, a record that remains unbroken.'
+                }
+            ],
+            medium: [
+                {
+                    id: 'sp_m_1',
+                    question: 'Which Grand Slam tennis tournament is the only one played on natural grass courts?',
+                    correct_answer: 'The Championships, Wimbledon',
+                    incorrect_answers: ['The French Open (Roland Garros)', 'The Australian Open', 'The US Open'],
+                    explanation: 'Founded in 1877 in London, Wimbledon is the oldest tennis tournament in the world and the only major Grand Slam event retained on traditional grass courts.'
+                },
+                {
+                    id: 'sp_m_2',
+                    question: 'In international Association Football (soccer), what constitutes an offside offense at the moment the ball is played?',
+                    correct_answer: 'Being closer to the opponent\'s goal line than both the ball and the second-last opponent while involved in active play',
+                    incorrect_answers: [
+                        'Receiving a ball directly from a corner kick or throw-in',
+                        'Crossing into the opponent\'s penalty area before a free kick is struck',
+                        'Being in the opponent\'s defensive half when the goalkeeper possesses the ball'
+                    ],
+                    explanation: 'Under Law 11 of IFAB, an attacker is in an offside position if any part of their head, body, or feet is nearer to the opponents\' goal line than both the ball and second-last opponent (usually the last defender).'
+                },
+                {
+                    id: 'sp_m_3',
+                    question: 'What is the official duration of the shot clock in an NBA basketball possession?',
+                    correct_answer: '24 seconds',
+                    incorrect_answers: ['30 seconds', '35 seconds', '20 seconds'],
+                    explanation: 'The NBA introduced the 24-second shot clock in 1954 (conceived by Syracuse Nationals owner Danny Biasone) to accelerate gameplay and prevent stall tactics.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'sp_e_1',
+                    question: 'How many players are fielded on the court for each team during an active NBA or FIBA basketball game?',
+                    correct_answer: '5 players',
+                    incorrect_answers: ['6 players', '7 players', '4 players'],
+                    explanation: 'Standard basketball teams play with 5 active players on the court: Point Guard, Shooting Guard, Small Forward, Power Forward, and Center.'
+                },
+                {
+                    id: 'sp_e_2',
+                    question: 'What do the five interlocking rings on the official Olympic flag symbolize?',
+                    correct_answer: 'The union of the five participating continents and athletes from around the world',
+                    incorrect_answers: [
+                        'The five original track and field events in ancient Greece',
+                        'The five permanent member nations of the International Olympic Committee',
+                        'The five oceans of planet Earth'
+                    ],
+                    explanation: 'Designed by Pierre de Coubertin in 1913, the five interlocking rings (blue, yellow, black, green, red) represent the five inhabited continents of the world joined in the Olympic movement.'
+                },
+                {
+                    id: 'sp_e_3',
+                    question: 'In a standard regulation professional soccer match, how long is each regular half of play (excluding stoppage time)?',
+                    correct_answer: '45 minutes',
+                    incorrect_answers: ['40 minutes', '50 minutes', '30 minutes'],
+                    explanation: 'A regulation soccer game consists of two 45-minute halves for a total of 90 minutes, plus referee stoppage (injury) time added at the end of each half.'
+                }
+            ]
+        },
+
+        general: {
+            hard: [
+                {
+                    id: 'gen_h_1',
+                    question: 'Which five nations hold permanent veto-wielding seats on the United Nations Security Council (the P5)?',
+                    correct_answer: 'United States, United Kingdom, France, Russia, and China',
+                    incorrect_answers: [
+                        'United States, Germany, Japan, United Kingdom, and France',
+                        'United States, Russia, China, India, and Brazil',
+                        'United Kingdom, France, Germany, Italy, and Japan'
+                    ],
+                    explanation: 'The Permanent Five (P5) members of the UN Security Council are the victorious major powers of World War II granted veto authority over substantive resolutions under the UN Charter.'
+                },
+                {
+                    id: 'gen_h_2',
+                    question: 'The International Court of Justice (ICJ), the principal judicial organ of the United Nations, is permanently seated in which city?',
+                    correct_answer: 'The Hague, Netherlands (The Peace Palace)',
+                    incorrect_answers: ['Geneva, Switzerland', 'New York City, USA', 'Brussels, Belgium'],
+                    explanation: 'Established in 1945, the ICJ settles legal disputes between sovereign states and is the only principal UN organ not located in New York City, sitting at The Hague in the Netherlands.'
+                },
+                {
+                    id: 'gen_h_3',
+                    question: 'In the Standard Model of particle physics, how many fundamental elementary fermions (quarks and leptons) exist?',
+                    correct_answer: '12 elementary fermions (6 quarks and 6 leptons)',
+                    incorrect_answers: [
+                        '8 elementary fermions (4 quarks and 4 leptons)',
+                        '16 elementary fermions (8 quarks and 8 leptons)',
+                        '6 elementary fermions'
+                    ],
+                    explanation: 'The Standard Model classifies 12 fundamental fermions across 3 generations: 6 quarks (up, down, charm, strange, top, bottom) and 6 leptons (electron, muon, tau, and their 3 associated neutrinos).'
+                }
+            ],
+            medium: [
+                {
+                    id: 'gen_m_1',
+                    question: 'What is the approximate speed of sound in dry air at 20°C (68°F) at sea level?',
+                    correct_answer: '343 m/s (~1,235 km/h)',
+                    incorrect_answers: ['250 m/s (~900 km/h)', '500 m/s (~1,800 km/h)', '150 m/s (~540 km/h)'],
+                    explanation: 'The speed of sound in an ideal gas depends on temperature (v ≈ 331.3 + 0.6·T°C m/s). At 20°C, sound propagates through dry air at approximately 343 meters per second (Mach 1).'
+                },
+                {
+                    id: 'gen_m_2',
+                    question: 'How many total chromosomes are present in the nucleus of a normal human somatic (diploid) cell?',
+                    correct_answer: '46 chromosomes (23 pairs)',
+                    incorrect_answers: ['48 chromosomes (24 pairs)', '44 chromosomes (22 pairs)', '23 single chromosomes'],
+                    explanation: 'Normal human somatic cells are diploid (2n = 46), consisting of 22 pairs of autosomes and 1 pair of sex chromosomes (XX in females, XY in males).'
+                },
+                {
+                    id: 'gen_m_3',
+                    question: 'Which of the original Seven Wonders of the Ancient World is the only one that still remains intact today?',
+                    correct_answer: 'The Great Pyramid of Giza (Egypt)',
+                    incorrect_answers: [
+                        'The Colossus of Rhodes',
+                        'The Lighthouse of Alexandria',
+                        'The Hanging Gardens of Babylon'
+                    ],
+                    explanation: 'Constructed around 2560 BC for Pharaoh Khufu, the Great Pyramid of Giza is the oldest of the ancient wonders and the only one that has survived into modern times.'
+                }
+            ],
+            easy: [
+                {
+                    id: 'gen_e_1',
+                    question: 'Which layer of Earth\'s atmosphere is closest to the surface, containing nearly all weather phenomena and atmospheric mass?',
+                    correct_answer: 'The Troposphere',
+                    incorrect_answers: ['The Stratosphere', 'The Mesosphere', 'The Thermosphere'],
+                    explanation: 'The troposphere extends from Earth\'s surface up to roughly 7–20 km altitude and contains approximately 75–80% of the atmosphere\'s total mass and virtually all weather and water vapor.'
+                },
+                {
+                    id: 'gen_e_2',
+                    question: 'Which blood group type is medically designated as the "universal red blood cell donor"?',
+                    correct_answer: 'O-negative (O-)',
+                    incorrect_answers: ['AB-positive (AB+)', 'A-positive (A+)', 'O-positive (O+)'],
+                    explanation: 'O-negative red blood cells lack A, B, and Rh surface antigens, meaning they can generally be transfused into patients of any blood group without provoking an acute hemolytic transfusion reaction.'
+                },
+                {
+                    id: 'gen_e_3',
+                    question: 'What is the official currency used across the United Kingdom?',
+                    correct_answer: 'British Pound Sterling (£)',
+                    incorrect_answers: ['Euro (€)', 'Swiss Franc (CHF)', 'Crown (SEK)'],
+                    explanation: 'The British Pound Sterling (GBP, £) is the official currency of the United Kingdom and its crown dependencies.'
+                }
+            ]
+        }
+    };
     }
 }
 

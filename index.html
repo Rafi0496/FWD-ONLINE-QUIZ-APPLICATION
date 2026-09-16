@@ -195,17 +195,17 @@
                             <button type="button" class="selector-pill pill-easy" data-difficulty="easy">
                                 <span class="pill-dot"></span>
                                 <strong>Easy</strong>
-                                <small>Foundations</small>
+                                <small>40% Difficulty</small>
                             </button>
                             <button type="button" class="selector-pill pill-medium active" data-difficulty="medium">
                                 <span class="pill-dot"></span>
                                 <strong>Medium</strong>
-                                <small>Balanced</small>
+                                <small>70% Difficulty</small>
                             </button>
                             <button type="button" class="selector-pill pill-hard" data-difficulty="hard">
                                 <span class="pill-dot"></span>
                                 <strong>Hard</strong>
-                                <small>Advanced</small>
+                                <small>100% Difficulty</small>
                             </button>
                         </div>
                         <input type="hidden" id="difficulty" value="medium">
@@ -225,18 +225,18 @@
                         </div>
 
                         <div class="dashboard-section">
-                            <label class="section-title-label"><i class="fas fa-clock"></i> Time per Question</label>
+                            <label class="section-title-label"><i class="fas fa-stopwatch"></i> Time per Question</label>
                             <div class="selector-pills-row" id="timer-pills-container">
-                                <button type="button" class="chip-pill" data-timer="30">30s <small>(Fast)</small></button>
-                                <button type="button" class="chip-pill active" data-timer="60">60s <small>(Standard)</small></button>
-                                <button type="button" class="chip-pill" data-timer="90">90s <small>(Relaxed)</small></button>
+                                <button type="button" class="chip-pill" data-timer="30"><strong>30s</strong> <small>(Fast)</small></button>
+                                <button type="button" class="chip-pill active" data-timer="60"><strong>60s</strong> <small>(Standard)</small></button>
+                                <button type="button" class="chip-pill" data-timer="90"><strong>90s</strong> <small>(Relaxed)</small></button>
                             </div>
                             <input type="hidden" id="timerDuration" value="60">
                         </div>
                     </div>
 
                     <!-- Launch Button -->
-                    <div class="dashboard-launch-area">
+                    <div class="dashboard-launch-bar">
                         <button id="start-quiz-btn" class="btn btn-tactile-primary btn-launch">
                             <i class="fas fa-play-circle"></i>
                             <span>Start Quiz with Fresh Questions</span>
@@ -272,6 +272,10 @@
                 <div class="hud-item hud-progress">
                     <i class="fas fa-layer-group"></i>
                     <span>Question <strong id="current-question">1</strong> of <strong id="total-questions">10</strong></span>
+                </div>
+                <div class="hud-item hud-diff-display">
+                    <i class="fas fa-bolt"></i>
+                    <span id="quiz-diff-badge" class="hud-diff-pill pill-medium">Medium 70%</span>
                 </div>
                 <div class="hud-item hud-timer-container">
                     <div id="timer" class="tactile-timer-badge">
@@ -357,6 +361,10 @@
                         <div id="achievement-icon" class="achievement-medal">🏆</div>
                         <h2 id="results-title">Quiz Performance Report</h2>
                         <p id="performance-message" class="performance-subhead"></p>
+                        <div class="results-difficulty-tag">
+                            <span class="diff-tag-label">Challenge Tier:</span>
+                            <span id="results-difficulty-badge" class="hud-diff-pill pill-medium">Medium (70% Difficulty)</span>
+                        </div>
                     </div>
                     
                     <!-- Visual Metrics Hub -->
