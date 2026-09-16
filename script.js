@@ -1781,11 +1781,11 @@ class QuizApp {
         this.sound.playClick();
         const percentage = Math.round((this.score / this.questions.length) * 100);
         const subject = this.getSubjectName(this.userData.favoriteSubject);
-        const shareText = `🎯 ${this.userData.name} scored ${percentage}% on QuizMaster!\n📚 Subject: ${subject}\n🏆 Score: ${this.score}/${this.questions.length} in ${this.totalQuizTime}s\n\nTest your knowledge at QuizMaster! 🚀`;
+        const shareText = `🎯 ${this.userData.name} scored ${percentage}% on Vquizion!\n📚 Subject: ${subject}\n🏆 Score: ${this.score}/${this.questions.length} in ${this.totalQuizTime}s\n\nTest your knowledge at Vquizion! 🚀`;
         
         if (navigator.share) {
             navigator.share({
-                title: 'QuizMaster Results - ' + this.userData.name,
+                title: 'Vquizion Results - ' + this.userData.name,
                 text: shareText,
                 url: window.location.href
             }).catch(() => {

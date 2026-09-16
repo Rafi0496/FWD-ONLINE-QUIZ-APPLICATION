@@ -1,6 +1,6 @@
-# QuizMaster - Interactive Learning Platform 🚀
+# Vquizion - Interactive Learning & Skill Assessment Platform 🚀
 
-QuizMaster is a responsive, feature-rich web application built with vanilla HTML, CSS, and modern JavaScript. It offers personalized quizzes across multiple academic and general knowledge subjects with difficulty levels tailored to education tiers.
+Vquizion is a responsive, feature-rich web application built with vanilla HTML, CSS, and modern JavaScript. It offers personalized quizzes across multiple academic and general knowledge subjects with difficulty levels calibrated from 40% (Easy) to 70% (Medium) and 100% (Hard).
 
 ---
 
